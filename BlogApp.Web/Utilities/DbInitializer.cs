@@ -14,41 +14,40 @@ public class DbInitializer
         [
             new Post
             {
-                PostId = 1,
                 Title = "First Post",
                 Body = "This is the first post.",
-                DatePosted = DateTime.UtcNow
+                DatePosted = DateTime.UtcNow,
+                Slug = "first-post"
             },
             new Post
             {
-                PostId = 2,
                 Title = "Second Post",
                 Body = "This is the second post.",
-                DatePosted = DateTime.UtcNow
+                DatePosted = DateTime.UtcNow,
+                Slug = "second-post"
             }
         ];
         context.Posts.AddRange(posts);
+        context.SaveChanges();
 
         Comment[] comments = [
             new Comment
             {
-                CommentId = 1,
-                PostId = 1,
+                PostId = posts[0].PostId,
                 Name = "Alice",
                 Text = "Great post!",
                 DatePosted = DateTime.UtcNow
             },
             new Comment
             {
-                CommentId = 2,
-                PostId = 2,
+                PostId = posts[1].PostId,
                 Name = "Bob",
                 Text = "Thanks for sharing.",
                 DatePosted = DateTime.UtcNow
             },
         ];
-        context.Comments.AddRange(comments);
 
+        context.Comments.AddRange(comments);
         context.SaveChanges();
     }
 }

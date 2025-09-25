@@ -29,19 +29,18 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    //app.UseExceptionHandler("/Home/Error");
+    //app.UseHsts();
     app.UseDeveloperExceptionPage();
 
     using var scope = app.Services.CreateScope();
-
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     var dbContext = scope.ServiceProvider.GetRequiredService<BlogContext>();
     try
     {
-        logger.LogInformation("Ensuring database exists");
-        dbContext.Database.EnsureCreated();
-        logger.LogInformation("Applying migrations");
+        logger.LogDebug("Applying pending migrations");
         dbContext.Database.Migrate();
-        logger.LogInformation("Ensuring database seeded");
+        logger.LogDebug("Ensuring database has been seeded");
         new DbInitializer().Initialize(dbContext);
     }
     catch (Exception ex)
@@ -51,9 +50,7 @@ if (app.Environment.IsDevelopment())
     }
 }
 
-//app.UseExceptionHandler("/Home/Error");
-//app.UseHsts();
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -62,6 +59,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Posts}/{action=Index}/{id?}");
 
 app.Run();

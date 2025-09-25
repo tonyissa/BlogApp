@@ -76,6 +76,6 @@ app.UseRouting();
 app.MapControllerRoute(
     name: "default",
     pattern: "{action=Index}/{id?}",
-    defaults: new { controller = "Home" });
+    defaults: new { controller = "Blog" });
 
 app.Run();

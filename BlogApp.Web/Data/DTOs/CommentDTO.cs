@@ -1,4 +1,4 @@
-﻿namespace BlogApp.Web.Data;
+﻿namespace BlogApp.Web.Data.DTOs;
 
 public class CommentDTO
 {

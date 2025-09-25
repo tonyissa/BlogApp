@@ -1,4 +1,5 @@
 using BlogApp.Web.Data;
+using BlogApp.Web.Data.DTOs;
 using BlogApp.Web.Interfaces;
 using BlogApp.Web.Models;
 using BlogApp.Web.Options;
@@ -44,8 +45,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    //app.UseExceptionHandler("/Home/Error");
-    //app.UseHsts();
+    app.UseHsts();
     app.UseDeveloperExceptionPage();
 
     using var scope = app.Services.CreateScope();
@@ -64,16 +64,18 @@ if (app.Environment.IsDevelopment())
         return;
     }
 }
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHttpsRedirection();
+}
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
-app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Posts}/{action=Index}/{id?}");
+    pattern: "{action=Index}/{id?}",
+    defaults: new { controller = "Home" });
 
 app.Run();

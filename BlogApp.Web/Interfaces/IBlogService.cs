@@ -1,4 +1,4 @@
-﻿using BlogApp.Web.Data;
+﻿using BlogApp.Web.Data.DTOs;
 
 namespace BlogApp.Web.Interfaces;
 

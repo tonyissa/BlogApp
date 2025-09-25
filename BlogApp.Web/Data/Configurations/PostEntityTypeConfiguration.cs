@@ -8,22 +8,25 @@ public class PostEntityTypeConfiguration : IEntityTypeConfiguration<Post>
 {
     public void Configure(EntityTypeBuilder<Post> builder)
     {
-        builder.Property(b => b.Title)
+        builder.Property(p => p.Title)
             .HasMaxLength(150)
             .IsRequired();
 
-        builder.Property(b => b.Body)
+        builder.Property(p => p.Body)
             .HasMaxLength(10000);
 
-        builder.Property(b => b.DatePosted)
+        builder.Property(p => p.DatePosted)
             .HasDefaultValueSql("GETDATE()");
 
-        builder.HasIndex(b => b.DatePosted);
+        builder.HasIndex(p => p.DatePosted);
 
-        builder.HasIndex(b => b.Slug)
+        builder.HasIndex(p => p.Slug)
             .IsUnique();
 
-        builder.Property(b => b.Slug)
+        builder.Property(p => p.Slug)
             .IsRequired();
+
+        builder.Property(p => p.RowVersion)
+            .IsRowVersion();
     }
 }

@@ -8,4 +8,5 @@ public class Post
     public List<Comment>? Comments { get; set; }
     public DateTime DatePosted { get; set; }
     public required string Slug { get; set; }
+    public byte[] RowVersion { get; set; }
 }

@@ -9,4 +9,5 @@ public class Comment
     public DateTime DatePosted { get; set; }
     public required string Name { get; set; }
     public required string Token { get; set; }
+    public byte[] RowVersion { get; set; }
 }

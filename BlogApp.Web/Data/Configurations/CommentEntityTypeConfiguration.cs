@@ -29,5 +29,8 @@ public class CommentEntityTypeConfiguration : IEntityTypeConfiguration<Comment>
 
         builder.Property(c => c.Token)
             .IsRequired();
+
+        builder.Property(c => c.RowVersion)
+            .IsRowVersion();
     }
 }

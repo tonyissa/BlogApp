@@ -6,7 +6,7 @@ namespace BlogApp.Web.Interfaces;
 public interface IMapperService
 {
     PostDTO MapToDTO(Post post);
-    Post MapToModel(PostDTO postDTO);
+    Post MapToModel(PostDTO postDTO, Post? post = null);
     CommentDTO MapToDTO(Comment comment);
     Comment MapToModel(CommentDTO commentDTO);
 }

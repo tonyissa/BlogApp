@@ -10,7 +10,9 @@ public class MapperService(IMapper mapper) : IMapperService
     private readonly IMapper _mapper = mapper;
 
     public PostDTO MapToDTO(Post post) => _mapper.Map<PostDTO>(post);
-    public Post MapToModel(PostDTO post) => _mapper.Map<Post>(post);
+    public Post MapToModel(PostDTO postDTO, Post? post = null) => post != null 
+        ? _mapper.Map(postDTO, post)
+        : _mapper.Map<Post>(postDTO);
     public CommentDTO MapToDTO(Comment comment) => _mapper.Map<CommentDTO>(comment);
-    public Comment MapToModel(CommentDTO comment) => _mapper.Map<Comment>(comment);
+    public Comment MapToModel(CommentDTO commentDTO) => _mapper.Map<Comment>(commentDTO);
 }

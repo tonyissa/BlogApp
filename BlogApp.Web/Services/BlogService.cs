@@ -39,12 +39,35 @@ public class BlogService(BlogContext context, MapperService mapper, IOptions<Adm
         await _context.SaveChangesAsync();
     }
 
+    public async Task EditPostAsync(string adminKey, PostDTO postDTO, string originalSlug)
+    {
+        if (adminKey != _adminOptions.Value.Key)
+            throw new UnauthorizedAccessException("Invalid admin key.");
+
+        var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Slug == originalSlug) ??
+            throw new KeyNotFoundException("Original post not found.");
+
+        var newPost = _mapper.MapToModel(postDTO, existingPost);
+        newPost.Slug = Sluggify(newPost.Title);
+
+        _context.Posts.Update(newPost);
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new InvalidOperationException("Concurrency error: Post was modified or deleted already.");
+        }
+    }
+
     public async Task DeletePostAsync(string adminKey, string slug)
     {
         if (adminKey != _adminOptions.Value.Key)
             throw new UnauthorizedAccessException("Invalid admin key.");
 
-        var post = _context.Posts.FirstOrDefault(p => p.Slug == slug) ?? 
+        var post = await _context.Posts.FirstOrDefaultAsync(p => p.Slug == slug) ?? 
             throw new KeyNotFoundException("Post not found.");
 
         _context.Posts.Remove(post);
@@ -72,7 +95,7 @@ public class BlogService(BlogContext context, MapperService mapper, IOptions<Adm
         if (adminKey != _adminOptions.Value.Key)
             throw new UnauthorizedAccessException("Invalid admin key.");
 
-        var comment = _context.Comments.FirstOrDefault(c => c.Token == commentToken) ?? 
+        var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Token == commentToken) ?? 
             throw new KeyNotFoundException("Comment not found.");
 
         _context.Comments.Remove(comment);

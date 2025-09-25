@@ -8,4 +8,5 @@ public class Comment
     public required string Text { get; set; }
     public DateTime DatePosted { get; set; }
     public required string Name { get; set; }
+    public required string Token { get; set; }
 }

@@ -30,20 +30,24 @@ public class DbInitializer
         context.Posts.AddRange(posts);
         context.SaveChanges();
 
+        var now = DateTime.UtcNow.AddMinutes(5);
+
         Comment[] comments = [
             new Comment
             {
                 PostId = posts[0].PostId,
                 Name = "Alice",
                 Text = "Great post!",
-                DatePosted = DateTime.UtcNow
+                DatePosted = now,
+                Token = Helpers.GenerateToken("Alice", "Great post!", now)
             },
             new Comment
             {
                 PostId = posts[1].PostId,
                 Name = "Bob",
                 Text = "Thanks for sharing.",
-                DatePosted = DateTime.UtcNow
+                DatePosted = now,
+                Token = Helpers.GenerateToken("Bob", "Thanks for sharing.", now)
             },
         ];
 

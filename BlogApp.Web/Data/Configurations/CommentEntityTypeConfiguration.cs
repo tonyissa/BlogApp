@@ -23,5 +23,11 @@ public class CommentEntityTypeConfiguration : IEntityTypeConfiguration<Comment>
         builder.Property(c => c.Name)
             .HasMaxLength(30)
             .IsRequired();
+
+        builder.HasIndex(c => c.Token)
+            .IsUnique();
+
+        builder.Property(c => c.Token)
+            .IsRequired();
     }
 }

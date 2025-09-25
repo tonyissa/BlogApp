@@ -1,5 +1,7 @@
 ﻿using BlogApp.Web.Data;
 using BlogApp.Web.Models;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace BlogApp.Web.Utilities;
 
@@ -39,7 +41,7 @@ public class DbInitializer
                 Name = "Alice",
                 Text = "Great post!",
                 DatePosted = now,
-                Token = Helpers.GenerateToken("Alice", "Great post!", now)
+                Token = GenerateToken(new CommentDTO { Name = "Alice", Text = "Great post!", DatePosted = now })
             },
             new Comment
             {
@@ -47,11 +49,18 @@ public class DbInitializer
                 Name = "Bob",
                 Text = "Thanks for sharing.",
                 DatePosted = now,
-                Token = Helpers.GenerateToken("Bob", "Thanks for sharing.", now)
+                Token = GenerateToken(new CommentDTO { Name = "Bob", Text = "Thanks for sharing.", DatePosted = now })
             },
         ];
 
         context.Comments.AddRange(comments);
         context.SaveChanges();
+    }
+
+    public static string GenerateToken(CommentDTO comment)
+    {
+        var input = $"{comment.Name}{comment.Text}{comment.DatePosted.Ticks}";
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
+        return Convert.ToBase64String(bytes).Replace("/", "_").Replace("+", "-");
     }
 }

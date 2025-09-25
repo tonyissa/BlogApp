@@ -66,13 +66,12 @@ public class BlogService(BlogContext context, MapperService mapper, IOptions<Adm
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteCommentAsync(string adminKey, CommentDTO commentDTO)
+    public async Task DeleteCommentAsync(string adminKey, string commentToken)
     {
         if (adminKey != _adminOptions.Value.Key)
             throw new UnauthorizedAccessException("Invalid admin key.");
 
-        var token = GenerateToken(commentDTO);
-        var comment = _context.Comments.FirstOrDefault(c => c.Token == token) ?? 
+        var comment = _context.Comments.FirstOrDefault(c => c.Token == commentToken) ?? 
             throw new KeyNotFoundException("Comment not found.");
 
         _context.Comments.Remove(comment);

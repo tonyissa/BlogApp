@@ -17,5 +17,13 @@ public class PostEntityTypeConfiguration : IEntityTypeConfiguration<Post>
 
         builder.Property(b => b.DatePosted)
             .HasDefaultValueSql("GETDATE()");
+
+        builder.HasIndex(b => b.DatePosted);
+
+        builder.HasIndex(b => b.Slug)
+            .IsUnique();
+
+        builder.Property(b => b.Slug)
+            .IsRequired();
     }
 }

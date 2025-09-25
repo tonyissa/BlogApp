@@ -1,4 +1,8 @@
 using BlogApp.Web.Data;
+using BlogApp.Web.Interfaces;
+using BlogApp.Web.Models;
+using BlogApp.Web.Options;
+using BlogApp.Web.Services;
 using BlogApp.Web.Utilities;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +16,7 @@ builder.Services.AddDbContext<BlogContext>(options =>
         throw new ApplicationException("No connection string found in config.");
     options.UseSqlServer(connectionString);
 });
+builder.Services.AddScoped<IBlogService, BlogService>();
 
 builder.Services.AddCors(options =>
 {
@@ -24,6 +29,16 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+
+builder.Services.AddAutoMapper(config =>
+{
+    config.CreateMap<PostDTO, Post>().ReverseMap();
+    config.CreateMap<CommentDTO, Comment>().ReverseMap();
+});
+builder.Services.AddSingleton<MapperService>();
+
+builder.Services.Configure<AdminOptions>(
+    builder.Configuration.GetSection("Admin"));
 
 var app = builder.Build();
 

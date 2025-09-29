@@ -11,7 +11,8 @@ public class CommentEntityTypeConfiguration : IEntityTypeConfiguration<Comment>
         builder.HasOne(c => c.Post)
             .WithMany(b => b.Comments)
             .HasForeignKey(c => c.PostId)
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(c => c.Text)
             .HasMaxLength(1000)

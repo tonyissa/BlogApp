@@ -65,7 +65,7 @@ namespace BlogApp.Web.Migrations
                     b.HasIndex("Token")
                         .IsUnique();
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("BlogApp.Web.Models.Post", b =>
@@ -108,7 +108,7 @@ namespace BlogApp.Web.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("BlogApp.Web.Models.Comment", b =>

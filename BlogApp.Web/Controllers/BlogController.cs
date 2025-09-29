@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BlogApp.Web.Services;
 using BlogApp.Web.Data.DTOs;
+using BlogApp.Web.Interfaces;
 
 namespace BlogApp.Web.Controllers;
 
-public class BlogController(BlogService blogService) : Controller
+public class BlogController(IBlogService blogService) : Controller
 {
-    private readonly BlogService _blogService = blogService;
+    private readonly IBlogService _blogService = blogService;
 
     // GET: /
     [Route("")]

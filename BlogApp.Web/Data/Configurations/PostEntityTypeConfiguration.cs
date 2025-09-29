@@ -28,5 +28,10 @@ public class PostEntityTypeConfiguration : IEntityTypeConfiguration<Post>
 
         builder.Property(p => p.RowVersion)
             .IsRowVersion();
+
+        builder.HasMany(p => p.Comments)
+            .WithOne(c => c.Post)
+            .HasForeignKey(c => c.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

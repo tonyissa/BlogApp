@@ -1,7 +1,5 @@
 using BlogApp.Web.Data;
-using BlogApp.Web.Data.DTOs;
 using BlogApp.Web.Interfaces;
-using BlogApp.Web.Models;
 using BlogApp.Web.Options;
 using BlogApp.Web.Services;
 using BlogApp.Web.Utilities;
@@ -30,13 +28,6 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
-
-builder.Services.AddAutoMapper(config =>
-{
-    config.CreateMap<PostDTO, Post>().ReverseMap();
-    config.CreateMap<CommentDTO, Comment>().ReverseMap();
-});
-builder.Services.AddSingleton<MapperService>();
 
 builder.Services.Configure<AdminOptions>(
     builder.Configuration.GetSection("Admin"));
@@ -75,7 +66,6 @@ app.UseRouting();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{action=Index}/{id?}",
-    defaults: new { controller = "Blog" });
+    pattern: "{controller=Blog}/{action=Index}/{id?}");
 
 app.Run();

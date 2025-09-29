@@ -6,8 +6,8 @@ namespace BlogApp.Web.Data;
 
 public class BlogContext(DbContextOptions<BlogContext> options) : DbContext(options)
 {
-    public DbSet<Post> Posts { get; set; }
-    public DbSet<Comment> Comments { get; set; }
+    public virtual DbSet<Post> Posts { get; set; }
+    public virtual DbSet<Comment> Comments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

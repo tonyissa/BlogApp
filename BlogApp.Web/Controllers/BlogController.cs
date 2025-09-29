@@ -53,42 +53,8 @@ public class BlogController(IBlogService blogService) : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // GET: Posts/Edit/this-is-a-sample-post
-    [Route("posts/edit/{slug}")]
-    public async Task<IActionResult> EditPost(string slug)
-    {
-        var post = await _blogService.GetPostAsync(slug);
-        if (post == null)
-        {
-            return NotFound();
-        }
-
-        return View(post);
-    }
-
-    // POST: Posts/Edit/5
-    [Route("posts/edit/{slug}")]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditPost([Bind("Title,Body,DatePosted")] PostDTO editedPost, string slug, string admin_key)
-    {
-        if (!ModelState.IsValid)
-            return View(editedPost);
-
-        try
-        {
-            await _blogService.EditPostAsync(admin_key, editedPost, slug);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-
-        return RedirectToAction(nameof(Index));
-    }
-
     // GET: Posts/Delete/this-is-a-sample-post
-    [Route("posts/Delete/{slug}")]
+    [Route("posts/{slug}/delete")]
     public async Task<IActionResult> DeletePost(string slug)
     {
         var post = await _blogService.GetPostAsync(slug);
@@ -101,7 +67,7 @@ public class BlogController(IBlogService blogService) : Controller
     }
 
     // POST: Posts/Delete/this-is-a-sample-post
-    [Route("posts/delete/{slug}")]
+    [Route("posts/{slug}/delete")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(string slug, string admin_key)
@@ -137,7 +103,7 @@ public class BlogController(IBlogService blogService) : Controller
     }
 
     // POST: Posts/comment
-    [Route("posts/delete-comment")]
+    [Route("posts/{slug}/delete-comment")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteComment(string admin_key, string token)

@@ -16,25 +16,13 @@ public static class MapExtensions
     };
 
     // Map PostDTO to Post
-    public static Post MapToModel(this PostDTO postDTO, Post? existingPost = null)
+    public static Post MapToModel(this PostDTO postDTO) => new()
     {
-        if (existingPost != null)
-        {
-            existingPost.Title = postDTO.Title;
-            existingPost.Body = postDTO.Body;
-            existingPost.DatePosted = postDTO.DatePosted;
-            existingPost.Slug = postDTO.Slug;
-            return existingPost;
-        }
-
-        return new Post
-        {
-            Title = postDTO.Title,
-            Body = postDTO.Body,
-            DatePosted = postDTO.DatePosted,
-            Slug = postDTO.Slug
-        };
-    }
+        Title = postDTO.Title,
+        Body = postDTO.Body,
+        DatePosted = postDTO.DatePosted,
+        Slug = postDTO.Slug
+    };
 
     // Map Comment to CommentDTO
     public static CommentDTO MapToObject(this Comment comment) => new()

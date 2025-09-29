@@ -3,6 +3,7 @@ using BlogApp.Web.Data.DTOs;
 using BlogApp.Web.Extensions;
 using BlogApp.Web.Interfaces;
 using BlogApp.Web.Options;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
@@ -36,29 +37,15 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
         post.Slug = Sluggify(post.Title);
 
         _context.Posts.Add(post);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task EditPostAsync(string adminKey, PostDTO postDTO, string originalSlug)
-    {
-        if (adminKey != _adminOptions.Value.Key)
-            throw new UnauthorizedAccessException("Invalid admin key.");
-
-        var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Slug == originalSlug) ??
-            throw new KeyNotFoundException("Original post not found.");
-
-        var newPost = postDTO.MapToModel(existingPost);
-        newPost.Slug = Sluggify(newPost.Title);
-
-        _context.Posts.Update(newPost);
-
         try
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException)
+        catch (SqlException ex)
         {
-            throw new InvalidOperationException("Concurrency error: Post was modified or deleted already.");
+            if (ex.Number == 2627 || ex.Number == 2601)
+                throw new InvalidOperationException("A post with the same slug already exists.");
+            throw;
         }
     }
 
@@ -71,7 +58,6 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
             throw new KeyNotFoundException("Post not found.");
 
         _context.Posts.Remove(post);
-
         try
         {
             await _context.SaveChangesAsync();
@@ -99,7 +85,6 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
             throw new KeyNotFoundException("Comment not found.");
 
         _context.Comments.Remove(comment);
-
         try
         {
             await _context.SaveChangesAsync();

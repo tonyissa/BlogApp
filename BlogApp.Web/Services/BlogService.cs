@@ -30,23 +30,23 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
 
     public async Task AddPostAsync(string adminKey, PostDTO postDTO)
     {
-        //if (adminKey != _adminOptions.Value.Key)
-        //    throw new UnauthorizedAccessException("Invalid admin key.");
+        if (adminKey != _adminOptions.Value.Key)
+            throw new UnauthorizedAccessException("Invalid admin key.");
 
-        //var post = postDTO.MapToModel();
-        //post.Slug = Sluggify(post.Title);
+        var post = postDTO.MapToModel();
+        post.Slug = Sluggify(post.Title);
 
-        //_context.Posts.Add(post);
-        //try
-        //{
-        //    await _context.SaveChangesAsync();
-        //}
-        //catch (SqlException ex)
-        //{
-        //    if (ex.Number == 2627 || ex.Number == 2601)
-        //        throw new InvalidOperationException("A post with the same slug already exists.");
-        //    throw;
-        //}
+        _context.Posts.Add(post);
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (SqlException ex)
+        {
+            if (ex.Number == 2627 || ex.Number == 2601)
+                throw new InvalidOperationException("A post with the same slug already exists.");
+            throw;
+        }
     }
 
     public async Task DeletePostAsync(string adminKey, string slug)

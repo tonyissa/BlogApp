@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI - Build & Test
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  test:
+  build-and-test:
     runs-on: self-hosted
 
     steps:

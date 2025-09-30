@@ -15,9 +15,9 @@ namespace BlogApp.Tests;
 
 public static class TestHelper
 {
-    public static readonly Fixture Fixture = IniitalizeFicture();
+    public static readonly Fixture Fixture = InitalizeFicture();
 
-    private static Fixture IniitalizeFicture()
+    private static Fixture InitalizeFicture()
     {
         var fixture = new Fixture();
         fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()

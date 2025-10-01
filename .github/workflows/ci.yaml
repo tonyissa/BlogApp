@@ -16,5 +16,8 @@ jobs:
       - name: Build project
         run: dotnet build -c Release
 
-      - name: Run tests
-        run: dotnet test --no-build -c Release
+      - name: Run unit tests
+        run: dotnet test --no-build -c Release --filter Category=Unit
+
+      - name: Run integration tests
+        run: dotnet test --no-build -c Release --filter Category=Integration --environment admin_key="test-admin-key"

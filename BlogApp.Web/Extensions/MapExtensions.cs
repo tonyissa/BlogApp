@@ -38,5 +38,6 @@ public static class MapExtensions
         Text = commentDTO.Text,
         DatePosted = commentDTO.DatePosted,
         Name = commentDTO.Name,
+        PostId = commentDTO.PostId
     };
 }

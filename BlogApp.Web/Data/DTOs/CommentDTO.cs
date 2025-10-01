@@ -2,7 +2,8 @@
 
 public class CommentDTO
 {
-    public required string Text { get; set; }
+    public int PostId { get; set; }
+    public string Text { get; set; }
     public DateTime DatePosted { get; set; }
-    public required string Name { get; set; }
+    public string Name { get; set; }
 }

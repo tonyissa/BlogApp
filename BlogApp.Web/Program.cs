@@ -2,7 +2,6 @@ using BlogApp.Web.Data;
 using BlogApp.Web.Interfaces;
 using BlogApp.Web.Options;
 using BlogApp.Web.Services;
-using BlogApp.Web.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,8 +45,6 @@ if (app.Environment.IsDevelopment())
     {
         logger.LogDebug("Applying pending migrations");
         dbContext.Database.Migrate();
-        logger.LogDebug("Ensuring database has been seeded");
-        new DbInitializer().Initialize(dbContext);
     }
     catch (Exception ex)
     {
@@ -69,3 +66,5 @@ app.MapControllerRoute(
     pattern: "{controller=Blog}/{action=Index}/{id?}");
 
 app.Run();
+
+public partial class Program { }

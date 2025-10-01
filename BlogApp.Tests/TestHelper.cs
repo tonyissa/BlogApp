@@ -1,11 +1,10 @@
-﻿using AutoFixture;
-using BlogApp.Tests.Helpers;
-using BlogApp.Web.Data;
+﻿using BlogApp.Web.Data;
 using BlogApp.Web.Extensions;
 using BlogApp.Web.Interfaces;
 using BlogApp.Web.Models;
 using BlogApp.Web.Options;
 using BlogApp.Web.Services;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -15,16 +14,6 @@ namespace BlogApp.Tests;
 
 public static class TestHelper
 {
-    public static readonly Fixture Fixture = InitalizeFicture();
-
-    private static Fixture InitalizeFicture()
-    {
-        var fixture = new Fixture();
-        fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
-            .ForEach(b => fixture.Behaviors.Remove(b));
-        fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-        return fixture;
-    }
 
     public static Mock<BlogContext> CreateMockBlogContext(List<Post>? posts = null, List<Comment>? comments = null)
     {
@@ -52,38 +41,35 @@ public static class TestHelper
 
         for (int i = 0; i < count; i++)
         {
-            var post = Fixture.Build<Post>()
-                .With(p => p.PostId, i + 1)
-                .With(p => p.Title, $"Test Post {i + 1}")
-                .With(p => p.Body, "This is a test post body.")
-                .With(p => p.DatePosted, DateTime.UtcNow.AddDays(-i))
-                .With(p => p.Slug, $"test-post-{i + 1}")
-                .Create();
+            var post = new Post
+            {
+                Title = $"Test Post {i + 1}",
+                Body = "This is a test post body.",
+                DatePosted = DateTime.UtcNow.AddDays(-i),
+                Slug = $"test-post-{i + 1}",
+            };
             posts.Add(post);
         }
 
         return posts;
     }
 
-    public static List<Comment> CreateComments(int countOfPosts, int count)
+    public static List<Comment> CreateComments(int count, int? optionalPostIdSet = null)
     {
         var comments = new List<Comment>();
-        int idCounter = 1;
 
-        for (int i = 0; i < countOfPosts; i++)
+        for (int i = 0; i < count; i++)
         {
-            for (int j = 0; j < count; j++)
+            var comment = new Comment()
             {
-                var comment = Fixture.Build<Comment>()
-                    .With(c => c.CommentId, idCounter++)
-                    .With(c => c.PostId, i + 1)
-                    .With(c => c.Name, $"Author {j + 1}")
-                    .With(c => c.Text, "This is a test comment.")
-                    .With(c => c.DatePosted, DateTime.UtcNow.AddDays(-j))
-                    .Create();
-                comment.Token = TokenHelper.GenerateToken(comment.MapToObject());
-                comments.Add(comment);  
-            }
+                Name = $"Author {i + 1}",
+                Text = "This is a test comment.",
+                DatePosted = DateTime.UtcNow.AddDays(-i),
+            };
+            if (optionalPostIdSet is not null) 
+                comment.PostId = optionalPostIdSet.Value;
+            comment.Token = BlogService.GenerateToken(comment.MapToObject());
+            comments.Add(comment);  
         }
 
         return comments;

@@ -10,8 +10,6 @@ namespace BlogApp.Tests.Unit;
 [Trait("Category", "Unit")]
 public class BlogServiceTests
 {
-    public static readonly Fixture Fixture = TestHelper.Fixture;
-
     [Fact]
     public async Task GetAllPostsAsync_ShouldReturnAllPostsOrderedByDateDescending()
     {
@@ -66,11 +64,7 @@ public class BlogServiceTests
         // Arrange
         var context = TestHelper.CreateMockBlogContext();
         var service = TestHelper.CreateMockBlogService(context.Object);
-        var newPost = Fixture.Build<PostDTO>()
-            .With(p => p.Title, "New Post")
-            .With(p => p.Body, "This is a new post body.")
-            .With(p => p.Slug, "new-post")
-            .Create();
+        var newPost = TestHelper.CreatePosts(1).First().MapToObject();
 
         // Act
         await service.AddPostAsync("test-admin-key", newPost);
@@ -86,11 +80,7 @@ public class BlogServiceTests
         // Arrange
         var context = TestHelper.CreateMockBlogContext();
         var service = TestHelper.CreateMockBlogService(context.Object);
-        var newPost = Fixture.Build<PostDTO>()
-            .With(p => p.Title, "New Post")
-            .With(p => p.Body, "This is a new post body.")
-            .With(p => p.Slug, "new-post")
-            .Create();
+        var newPost = TestHelper.CreatePosts(1).First().MapToObject();
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedAccessException>(async () => 
@@ -144,7 +134,7 @@ public class BlogServiceTests
     {
         // Arrange
         var posts = TestHelper.CreatePosts(1);
-        var comments = TestHelper.CreateComments(1, 1);
+        var comments = TestHelper.CreateComments(1);
         var context = TestHelper.CreateMockBlogContext(posts, comments);
         var service = TestHelper.CreateMockBlogService(context.Object);
 
@@ -163,7 +153,7 @@ public class BlogServiceTests
         var posts = TestHelper.CreatePosts(1);
         var context = TestHelper.CreateMockBlogContext(posts);
         var service = TestHelper.CreateMockBlogService(context.Object);
-        var comments = TestHelper.CreateComments(1, 1);
+        var comments = TestHelper.CreateComments(1);
 
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
@@ -175,7 +165,7 @@ public class BlogServiceTests
     {
         // Arrange
         var posts = TestHelper.CreatePosts(1);
-        var comments = TestHelper.CreateComments(1, 1);
+        var comments = TestHelper.CreateComments(1);
         var context = TestHelper.CreateMockBlogContext(posts, comments);
         var service = TestHelper.CreateMockBlogService(context.Object);
 
@@ -192,7 +182,7 @@ public class BlogServiceTests
     {
         // Arrange
         var posts = TestHelper.CreatePosts(1);
-        var comments = TestHelper.CreateComments(1, 1);
+        var comments = TestHelper.CreateComments(1);
         var context = TestHelper.CreateMockBlogContext(posts, comments);
         var service = TestHelper.CreateMockBlogService(context.Object);
         var token = BlogService.GenerateToken(comments.First().MapToObject());
@@ -207,7 +197,7 @@ public class BlogServiceTests
     {
         // Arrange
         var posts = TestHelper.CreatePosts(1);
-        var comments = TestHelper.CreateComments(1, 1);
+        var comments = TestHelper.CreateComments(1);
         var context = TestHelper.CreateMockBlogContext(posts, comments);
         var service = TestHelper.CreateMockBlogService(context.Object);
 

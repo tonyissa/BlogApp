@@ -40,9 +40,11 @@ public class BlogController(IBlogService blogService) : Controller
         if (!ModelState.IsValid)
             return View(newPost);
 
+        string slug;
+
         try
         {
-            await _blogService.AddPostAsync(admin_key, newPost);
+            slug = await _blogService.AddPostAsync(admin_key, newPost);
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -53,10 +55,10 @@ public class BlogController(IBlogService blogService) : Controller
             return BadRequest(ex.Message);
         }
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(GetPost), slug);
     }
 
-    // GET: Posts/Delete/this-is-a-sample-post
+    // GET: Posts/this-is-a-sample-post/Delete
     [Route("posts/{slug}/delete")]
     public async Task<IActionResult> DeletePost([FromRoute] string slug)
     {
@@ -69,7 +71,7 @@ public class BlogController(IBlogService blogService) : Controller
         return View(post);
     }
 
-    // POST: Posts/Delete/this-is-a-sample-post
+    // POST: Posts/this-is-a-sample-post/Delete
     [Route("posts/{slug}/delete")]
     [HttpPost]
     public async Task<IActionResult> Delete([FromRoute] string slug, [FromHeader] string admin_key)
@@ -77,6 +79,10 @@ public class BlogController(IBlogService blogService) : Controller
         try
         {
             await _blogService.DeletePostAsync(admin_key, slug);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ex.Message);
         }
         catch (Exception ex)
         {
@@ -100,23 +106,27 @@ public class BlogController(IBlogService blogService) : Controller
             return BadRequest(ex.Message);
         }
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(GetPost), slug);
     }
 
     // POST: Posts/comment
     [Route("posts/{slug}/delete-comment")]
     [HttpPost]
-    public async Task<IActionResult> DeleteComment([FromHeader] string admin_key, [FromRoute] string token)
+    public async Task<IActionResult> DeleteComment([FromHeader] string admin_key, [FromRoute] string slug, [FromQuery] string token)
     {
         try
         {
             await _blogService.DeleteCommentAsync(admin_key, token);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ex.Message);
         }
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(GetPost), slug);
     }
 }

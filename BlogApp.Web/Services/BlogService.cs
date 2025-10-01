@@ -95,14 +95,14 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
         }
     }
 
-    private static string Sluggify(string input) => input
+    public static string Sluggify(string input) => input
         .ToLower()
         .Replace("-", "")
         .Replace(' ', '-')
         .Where(c => char.IsLetterOrDigit(c) || c == '-')
         .ToString() ?? "";
 
-    private static string GenerateToken(CommentDTO comment)
+    public static string GenerateToken(CommentDTO comment)
     {
         var input = $"{comment.Name}{comment.Text}{comment.DatePosted.Ticks}";
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));

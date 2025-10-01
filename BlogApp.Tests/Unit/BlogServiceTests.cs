@@ -10,7 +10,7 @@ namespace BlogApp.Tests.Unit;
 
 public class BlogServiceTests
 {
-    public static readonly Fixture _fixture = TestHelper.Fixture;
+    public static readonly Fixture Fixture = TestHelper.Fixture;
 
     [Fact]
     public async Task GetAllPostsAsync_ShouldReturnAllPostsOrderedByDateDescending()
@@ -66,7 +66,7 @@ public class BlogServiceTests
         // Arrange
         var context = TestHelper.CreateMockBlogContext();
         var service = TestHelper.CreateMockBlogService(context.Object);
-        var newPost = _fixture.Build<PostDTO>()
+        var newPost = Fixture.Build<PostDTO>()
             .With(p => p.Title, "New Post")
             .With(p => p.Body, "This is a new post body.")
             .With(p => p.Slug, "new-post")
@@ -86,7 +86,7 @@ public class BlogServiceTests
         // Arrange
         var context = TestHelper.CreateMockBlogContext();
         var service = TestHelper.CreateMockBlogService(context.Object);
-        var newPost = _fixture.Build<PostDTO>()
+        var newPost = Fixture.Build<PostDTO>()
             .With(p => p.Title, "New Post")
             .With(p => p.Body, "This is a new post body.")
             .With(p => p.Slug, "new-post")
@@ -164,7 +164,7 @@ public class BlogServiceTests
         var comments = TestHelper.CreateComments(1, 1);
         var context = TestHelper.CreateMockBlogContext(posts, comments);
         var service = TestHelper.CreateMockBlogService(context.Object);
-        var token = TokenHelper.GenerateToken(comments[0].MapToObject());
+        var token = BlogService.GenerateToken(comments[0].MapToObject());
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>

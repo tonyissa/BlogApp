@@ -66,7 +66,7 @@ public static class TestHelper
                 Text = "This is a test comment.",
                 DatePosted = DateTime.UtcNow.AddDays(-i),
             };
-            if (optionalPostIdSet is not null) 
+            if (optionalPostIdSet != null) 
                 comment.PostId = optionalPostIdSet.Value;
             comment.Token = BlogService.GenerateToken(comment.MapToObject());
             comments.Add(comment);  

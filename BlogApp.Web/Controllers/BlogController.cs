@@ -35,8 +35,7 @@ public class BlogController(IBlogService blogService) : Controller
     // POST: Posts/Create
     [Route("posts/create")]
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreatePost([Bind("Title,Body,DatePosted")] PostDTO newPost, string admin_key)
+    public async Task<IActionResult> CreatePost([FromBody] PostDTO newPost, [FromHeader] string admin_key)
     {
         if (!ModelState.IsValid)
             return View(newPost);
@@ -44,6 +43,10 @@ public class BlogController(IBlogService blogService) : Controller
         try
         {
             await _blogService.AddPostAsync(admin_key, newPost);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ex.Message);
         }
         catch (Exception ex)
         {
@@ -55,7 +58,7 @@ public class BlogController(IBlogService blogService) : Controller
 
     // GET: Posts/Delete/this-is-a-sample-post
     [Route("posts/{slug}/delete")]
-    public async Task<IActionResult> DeletePost(string slug)
+    public async Task<IActionResult> DeletePost([FromRoute] string slug)
     {
         var post = await _blogService.GetPostAsync(slug);
         if (post == null)
@@ -69,8 +72,7 @@ public class BlogController(IBlogService blogService) : Controller
     // POST: Posts/Delete/this-is-a-sample-post
     [Route("posts/{slug}/delete")]
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(string slug, string admin_key)
+    public async Task<IActionResult> Delete([FromRoute] string slug, [FromHeader] string admin_key)
     {
         try
         {
@@ -87,8 +89,7 @@ public class BlogController(IBlogService blogService) : Controller
     // POST: Posts/this-is-a-sample-post/comment
     [Route("posts/{slug}/create-comment")]
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateComment([Bind("Text,DatePosted,Name")] CommentDTO newComment, string slug)
+    public async Task<IActionResult> CreateComment([FromRoute] string slug, [FromBody] CommentDTO newComment)
     {
         try
         {
@@ -105,8 +106,7 @@ public class BlogController(IBlogService blogService) : Controller
     // POST: Posts/comment
     [Route("posts/{slug}/delete-comment")]
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteComment(string admin_key, string token)
+    public async Task<IActionResult> DeleteComment([FromHeader] string admin_key, [FromRoute] string token)
     {
         try
         {

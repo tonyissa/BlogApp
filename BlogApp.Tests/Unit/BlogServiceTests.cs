@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using BlogApp.Tests.Helpers;
 using BlogApp.Web.Data.DTOs;
 using BlogApp.Web.Extensions;
 using BlogApp.Web.Models;
@@ -8,6 +7,7 @@ using Moq;
 
 namespace BlogApp.Tests.Unit;
 
+[Trait("Category", "Unit")]
 public class BlogServiceTests
 {
     public static readonly Fixture Fixture = TestHelper.Fixture;
@@ -38,11 +38,11 @@ public class BlogServiceTests
         var service = TestHelper.CreateMockBlogService(context);
 
         // Act
-        var result = await service.GetPostAsync(posts[0].Slug);
+        var result = await service.GetPostAsync(posts.First().Slug);
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(posts[0].Title, result.Title);
+        Assert.Equal(posts.First().Title, result.Title);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class BlogServiceTests
         var service = TestHelper.CreateMockBlogService(context.Object);
 
         // Act
-        await service.DeletePostAsync("test-admin-key", posts[0].Slug);
+        await service.DeletePostAsync("test-admin-key", posts.First().Slug);
 
         // Assert
         context.Verify(c => c.Posts.Remove(It.IsAny<Post>()));
@@ -123,7 +123,7 @@ public class BlogServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
-            await service.DeletePostAsync("invalid-admin-key", posts[0].Slug));
+            await service.DeletePostAsync("invalid-admin-key", posts.First().Slug));
     }
 
     [Fact]
@@ -140,6 +140,37 @@ public class BlogServiceTests
     }
 
     [Fact]
+    public async Task CreateCommentAsync_WithValidSlug_ShouldCreateComment()
+    {
+        // Arrange
+        var posts = TestHelper.CreatePosts(1);
+        var comments = TestHelper.CreateComments(1, 1);
+        var context = TestHelper.CreateMockBlogContext(posts, comments);
+        var service = TestHelper.CreateMockBlogService(context.Object);
+
+        // Act
+        await service.DeleteCommentAsync("test-admin-key", comments.First().Token);
+
+        // Act & Assert
+        context.Verify(c => c.Comments.Remove(It.IsAny<Comment>()));
+        context.Verify(c => c.SaveChangesAsync(default), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateCommentAsync_WithInvalidSlug_ShouldThrowKeyNotFoundException()
+    {
+        // Arrange
+        var posts = TestHelper.CreatePosts(1);
+        var context = TestHelper.CreateMockBlogContext(posts);
+        var service = TestHelper.CreateMockBlogService(context.Object);
+        var comments = TestHelper.CreateComments(1, 1);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
+            await service.AddCommentAsync(comments.First().MapToObject(), "invalid-slug"));
+    }
+
+    [Fact]
     public async Task DeleteCommentAsync_WithValidAdminKey_ShouldDeleteComment()
     {
         // Arrange
@@ -149,7 +180,7 @@ public class BlogServiceTests
         var service = TestHelper.CreateMockBlogService(context.Object);
 
         // Act
-        await service.DeleteCommentAsync("test-admin-key", comments[0].Token);
+        await service.DeleteCommentAsync("test-admin-key", comments.First().Token);
 
         // Assert
         context.Verify(c => c.Comments.Remove(It.IsAny<Comment>()));
@@ -164,7 +195,7 @@ public class BlogServiceTests
         var comments = TestHelper.CreateComments(1, 1);
         var context = TestHelper.CreateMockBlogContext(posts, comments);
         var service = TestHelper.CreateMockBlogService(context.Object);
-        var token = BlogService.GenerateToken(comments[0].MapToObject());
+        var token = BlogService.GenerateToken(comments.First().MapToObject());
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>

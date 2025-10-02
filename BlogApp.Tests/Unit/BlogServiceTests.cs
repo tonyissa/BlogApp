@@ -1,6 +1,4 @@
-﻿using AutoFixture;
-using BlogApp.Web.Data.DTOs;
-using BlogApp.Web.Extensions;
+﻿using BlogApp.Web.Extensions;
 using BlogApp.Web.Models;
 using BlogApp.Web.Services;
 using Moq;

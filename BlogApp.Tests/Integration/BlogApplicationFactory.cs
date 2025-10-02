@@ -36,7 +36,8 @@ public class BlogApplicationFactory : WebApplicationFactory<Program>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Admin:Key"] = Environment.GetEnvironmentVariable("admin_key")
+                ["Admin:Key"] = Environment.GetEnvironmentVariable("admin_key"),
+                ["ConnectionStrings:BlogConnection"] = ""
             });
         });
     }

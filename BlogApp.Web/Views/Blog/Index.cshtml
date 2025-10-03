@@ -1,7 +1,78 @@
 ﻿@{
     ViewData["Title"] = "Tony's Blog";
 }
+@using BlogApp.Web.Data.DTOs
+@model IEnumerable<PostDTO>
 
-<div class="grid-cont flex-1 p-[2rem]">
-
+<div class="grid-cont justify-center p-[1rem] text-center sm:justify-normal md:p-[2rem] lg:p-[3rem]">
+    @foreach (var post in Model)
+    {
+        <div data-slug="@post.Slug" class="grid-item p-[1.75rem] sm:p-[1.5rem] md:p-[1.25rem] lg:p-[1rem]">
+            <a href="posts/@post.Slug" class="flex flex-col gap-[1rem]">
+                <img src="/img/scrap.png" class="px-[33%] sm:p-[1.75rem] md:p-[1.5rem] lg:p-[1rem]" />
+                <p>@post.Title</p>
+            </a>
+        </div>
+    }
 </div>
+
+<script>
+    let contextMenuExists = false;
+    const main = document.querySelector("main");
+
+    main.addEventListener("mousedown", () => {
+        if (contextMenuExists) {
+            document.querySelectorAll(".context-menu").forEach(c => c.remove());
+            document.querySelectorAll(".w98-item-toggled").forEach(i => i.classList.remove("w98-item-toggled"));
+            contextMenuExists = false;
+        }
+    });
+
+    main.addEventListener("auxclick", (e) => {
+        const contextMenu = document.createElement("div");
+        contextMenu.classList.add("context-menu");
+        contextMenu.classList.add("w98-border");
+        const createPageItem = document.createElement("a");
+        createPageItem.href = `/posts/create`;
+        createPageItem.classList.add("context-menu-item");
+        createPageItem.textContent = "Create New Blog Post";
+        contextMenu.appendChild(createPageItem);
+
+        const clientX = e.clientX;
+        const clientY = e.clientY;
+        contextMenu.style.top = `${clientY}px`;
+        contextMenu.style.left = `${clientX}px`;
+
+        document.body.appendChild(contextMenu);
+        contextMenuExists = true;
+    });
+
+    const items = document.querySelectorAll(".grid-item");
+
+    items.forEach(item => {
+        item.addEventListener("auxclick", (e) => {
+            e.stopPropagation();
+            item.classList.add("w98-item-toggled");
+            const contextMenu = document.createElement("div");
+            contextMenu.classList.add("context-menu");
+            contextMenu.classList.add("w98-border");
+            const deletePageItem = document.createElement("a");
+            deletePageItem.href = `/posts/${item.getAttribute("data-slug")}/delete`;
+            deletePageItem.classList.add("context-menu-item");
+            deletePageItem.textContent = "Delete Blog Post";
+            contextMenu.appendChild(deletePageItem);
+
+            const clientX = e.clientX;
+            const clientY = e.clientY;
+            contextMenu.style.top = `${clientY}px`;
+            contextMenu.style.left = `${clientX}px`;
+
+            document.body.appendChild(contextMenu);
+            contextMenuExists = true;
+        });
+    });
+
+    window.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+    });
+</script>

@@ -37,11 +37,7 @@ public class BlogController(IBlogService blogService) : Controller
     [HttpPost]
     public async Task<IActionResult> CreatePost([FromBody] PostDTO newPost, [FromHeader] string admin_key)
     {
-        if (!ModelState.IsValid)
-            return View(newPost);
-
         string slug;
-
         try
         {
             slug = await _blogService.AddPostAsync(admin_key, newPost);

@@ -6,12 +6,11 @@
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/site.output.css" asp-append-version="true" />
 </head>
-<body>
-    <main class="flex min-h-screen max-w-screen">
+<body class="bg-[rgb(249,250,249)]">
+    <main class="relative h-screen max-w-screen">
         @RenderBody()
     </main>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

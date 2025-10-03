@@ -1,6 +1,197 @@
 @import "tailwindcss" source("../../");
 
+body {
+    font: "MS Sans Serif", Tahoma, Arial, sans-serif;
+}
+
 .grid-cont {
     display: grid;
-    grid-template-columns: repeat()
 }
+
+@media (orientation: portrait) {
+    .grid-cont {
+        grid-template-columns: repeat(auto-fit, 50%);
+    }
+
+    @media (min-width: 500px) {
+        .grid-cont {
+            grid-template-columns: repeat(auto-fit, 33vw);
+            gap: .25rem;
+        }
+    }
+
+    @media (min-width: 640px) {
+        .grid-cont {
+            grid-template-columns: repeat(auto-fit, 25vw);
+            gap: .5rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .grid-cont {
+            grid-template-columns: repeat(auto-fit, min(15vw, 150px));
+            gap: .75rem;
+        }
+    }
+}
+
+@media (orientation: landscape) {
+    .grid-cont {
+        grid-template-columns: repeat(auto-fit, 25vw);
+        gap: .25rem;
+    }
+
+    @media (min-width: 500px) {
+        .grid-cont {
+            grid-template-columns: repeat(auto-fit, 22vw);
+            gap: .5rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .grid-cont {
+            grid-template-columns: repeat(auto-fit, 9vw);
+            gap: .75rem;
+        }
+    }
+
+    @media (min-width: 1920px) {
+        .grid-cont {
+            grid-template-columns: repeat(auto-fit, 6.6vw);
+            gap: 1rem;
+        }
+    }
+}
+
+.context-menu {
+    position: absolute;
+    background-color: #C0C0C0;
+    padding-bottom: 1px;
+/*    border: 1px solid black;
+    box-shadow: 2px 2px #808080;*/
+}
+
+.context-menu-item {
+    color: black;
+    background-color: transparent;
+    padding: 0px 1.5rem 2px;
+    margin-bottom: 2px;
+}
+
+.context-menu-item:hover, .w98-item-toggled, .grid-item:hover {
+    background-color: #000080;
+    color: white;
+    cursor: pointer;
+}
+
+.w98-border {
+    border-top: 1px solid white;
+    border-left: 1px solid white;
+    border-right: 1px solid gray;
+    border-bottom: 1px solid gray;
+    box-shadow: 1px 1px black;
+}
+
+.w98-label {
+    display: inline-block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    vertical-align: middle;
+    user-select: none;
+    width: 30px;
+}
+
+.w98-input {
+    display: inline-block;
+    background: #E0E0E0;
+    padding: 4px 6px;
+    font-size: 12px;
+    line-height: 1.15;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #808080;
+    border-right: 2px solid #808080;
+    outline: none;
+    min-width: 160px;
+}
+
+.w98-textarea {
+    background: #E0E0E0;
+    padding: 6px;
+    font-size: 12px;
+    line-height: 1.15;
+    resize: vertical;
+    min-height: 80px;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #808080;
+    border-right: 2px solid #808080;
+    outline: none;
+    min-width: 160px;
+}
+
+.w98-input:focus,
+.w98-textarea:focus {
+    box-shadow: 0 0 0 2px rgba(0,0,255,0.15);
+}
+
+.w98-btn {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 12px;
+    line-height: 1;
+    background: linear-gradient(#e6e6e6, #d6d6d6);
+    cursor: pointer;
+    user-select: none;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #808080;
+    border-right: 2px solid #808080;
+    box-shadow: none;
+    margin: 2px;
+    vertical-align: middle;
+}
+
+.w98-btn:hover {
+    background: linear-gradient(#f2f2f2,#dcdcdc);
+}
+
+.w98-btn:active,
+.w98-btn[data-pressed="true"] {
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-bottom: 2px solid #fff;
+    border-right: 2px solid #fff;
+    transform: translateY(1px);
+    background: linear-gradient(#cfcfcf,#bfbfbf);
+    outline: none;
+}
+
+.w98-btn:focus {
+    box-shadow: 0 0 0 2px rgba(0,0,255,0.15);
+    outline: none;
+}
+
+.w98-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+    background: #C0C0C0;
+    padding: 8px;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #808080;
+    border-right: 2px solid #808080;
+}
+
+/* Optional: little 3D inset field for grouping */
+/*.w98-fieldset {
+    background: #C0C0C0;
+    padding: 8px;
+    border-top: 2px solid var(--highlight);
+    border-left: 2px solid var(--highlight);
+    border-bottom: 2px solid var(--shadow);
+    border-right: 2px solid var(--shadow);
+}*/

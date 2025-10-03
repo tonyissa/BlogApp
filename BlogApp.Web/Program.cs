@@ -14,7 +14,10 @@ builder.Services.AddDbContext<BlogContext>(options =>
         throw new ApplicationException("No connection string found in config.");
     options.UseSqlServer(connectionString);
 });
+
 builder.Services.AddScoped<IBlogService, BlogService>();
+builder.Services.Configure<AdminOptions>(
+    builder.Configuration.GetSection("Admin"));
 
 builder.Services.AddCors(options =>
 {
@@ -27,9 +30,6 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
-
-builder.Services.Configure<AdminOptions>(
-    builder.Configuration.GetSection("Admin"));
 
 var app = builder.Build();
 
@@ -60,6 +60,7 @@ else
 
 app.UseStaticFiles();
 app.UseRouting();
+app.UseExceptionHandler("/Error");
 
 app.MapControllerRoute(
     name: "default",

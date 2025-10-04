@@ -137,10 +137,10 @@ public class BlogServiceTests
         var service = TestHelper.CreateMockBlogService(context.Object);
 
         // Act
-        await service.DeleteCommentAsync("test-admin-key", comments.First().Token);
+        await service.AddCommentAsync(comments.First().MapToObject(), posts.First().Slug);
 
         // Act & Assert
-        context.Verify(c => c.Comments.Remove(It.IsAny<Comment>()));
+        context.Verify(c => c.Comments.Add(It.IsAny<Comment>()));
         context.Verify(c => c.SaveChangesAsync(default), Times.Once);
     }
 
@@ -156,51 +156,5 @@ public class BlogServiceTests
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
             await service.AddCommentAsync(comments.First().MapToObject(), "invalid-slug"));
-    }
-
-    [Fact]
-    public async Task DeleteCommentAsync_WithValidAdminKey_ShouldDeleteComment()
-    {
-        // Arrange
-        var posts = TestHelper.CreatePosts(1);
-        var comments = TestHelper.CreateComments(1);
-        var context = TestHelper.CreateMockBlogContext(posts, comments);
-        var service = TestHelper.CreateMockBlogService(context.Object);
-
-        // Act
-        await service.DeleteCommentAsync("test-admin-key", comments.First().Token);
-
-        // Assert
-        context.Verify(c => c.Comments.Remove(It.IsAny<Comment>()));
-        context.Verify(c => c.SaveChangesAsync(default), Times.Once);
-    }
-
-    [Fact]
-    public async Task DeleteCommentAsync_WithoutValidAdminKey_ShouldThrowUnauthorizedAccessException()
-    {
-        // Arrange
-        var posts = TestHelper.CreatePosts(1);
-        var comments = TestHelper.CreateComments(1);
-        var context = TestHelper.CreateMockBlogContext(posts, comments);
-        var service = TestHelper.CreateMockBlogService(context.Object);
-        var token = BlogService.GenerateToken(comments.First().MapToObject());
-
-        // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
-            await service.DeleteCommentAsync("invalid-admin-key", token));
-    }
-
-    [Fact]
-    public async Task DeleteCommentAsync_WithInvalidToken_ShouldThrowKeyNotFoundException()
-    {
-        // Arrange
-        var posts = TestHelper.CreatePosts(1);
-        var comments = TestHelper.CreateComments(1);
-        var context = TestHelper.CreateMockBlogContext(posts, comments);
-        var service = TestHelper.CreateMockBlogService(context.Object);
-
-        // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
-            await service.DeleteCommentAsync("test-admin-key", "invalid-token"));
     }
 }

@@ -1,5 +1,7 @@
 ﻿using BlogApp.Web.Data;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.SqlClient;
@@ -30,6 +32,11 @@ public class BlogApplicationFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll(typeof(DbContextOptions<BlogContext>));
             services.AddSqlServer<BlogContext>(_connString);
+        });
+
+        builder.ConfigureTestServices(services =>
+        {
+            services.AddControllersWithViews(options => options.Filters.Add(new IgnoreAntiforgeryTokenAttribute()));
         });
 
         builder.ConfigureAppConfiguration((context, config) =>

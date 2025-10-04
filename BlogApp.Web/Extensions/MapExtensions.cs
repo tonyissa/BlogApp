@@ -1,5 +1,5 @@
-﻿using BlogApp.Web.Data.DTOs;
-using BlogApp.Web.Models;
+﻿using BlogApp.Web.Models;
+using BlogApp.Web.Models.DTOs;
 
 namespace BlogApp.Web.Extensions;
 

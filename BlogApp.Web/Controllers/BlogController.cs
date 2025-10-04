@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BlogApp.Web.Data.DTOs;
 using BlogApp.Web.Interfaces;
+using BlogApp.Web.Models.DTOs;
 
 namespace BlogApp.Web.Controllers;
 
@@ -37,6 +37,7 @@ public class BlogController(IBlogService blogService) : Controller
     [HttpPost]
     public async Task<IActionResult> CreatePost([FromBody] PostDTO newPost, [FromHeader] string admin_key)
     {
+
         string slug;
         try
         {
@@ -51,7 +52,7 @@ public class BlogController(IBlogService blogService) : Controller
             return BadRequest(ex.Message);
         }
 
-        return RedirectToAction(nameof(GetPost), slug);
+        return Ok(slug);
     }
 
     // GET: Posts/this-is-a-sample-post/Delete
@@ -85,7 +86,7 @@ public class BlogController(IBlogService blogService) : Controller
             return BadRequest(ex.Message);
         }
 
-        return RedirectToAction(nameof(Index));
+        return NoContent();
     }
 
     // POST: Posts/this-is-a-sample-post/comment

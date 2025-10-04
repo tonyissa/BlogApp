@@ -43,13 +43,17 @@
         })
 
         const data = await response.text();
-        let message;
-        try {
-            message = JSON.parse(data);
-        } catch {
-            message = data;
-        }
+        if (!response.ok) {
+            let message;
+            try {
+                message = JSON.parse(data);
+            } catch {
+                message = data;
+            }
 
-        alert(message);
+            alert(message);
+        } else {
+            window.location.href = `/posts/${data}`;
+        }
     }
 </script>

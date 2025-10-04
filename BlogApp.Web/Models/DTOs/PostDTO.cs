@@ -1,4 +1,4 @@
-﻿namespace BlogApp.Web.Data.DTOs;
+﻿namespace BlogApp.Web.Models.DTOs;
 
 public class PostDTO
 {

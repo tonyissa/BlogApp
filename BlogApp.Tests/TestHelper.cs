@@ -4,7 +4,6 @@ using BlogApp.Web.Interfaces;
 using BlogApp.Web.Models;
 using BlogApp.Web.Options;
 using BlogApp.Web.Services;
-using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Moq;

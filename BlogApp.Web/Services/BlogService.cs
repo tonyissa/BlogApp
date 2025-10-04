@@ -1,7 +1,7 @@
 ﻿using BlogApp.Web.Data;
-using BlogApp.Web.Data.DTOs;
 using BlogApp.Web.Extensions;
 using BlogApp.Web.Interfaces;
+using BlogApp.Web.Models.DTOs;
 using BlogApp.Web.Options;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

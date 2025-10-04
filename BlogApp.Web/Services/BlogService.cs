@@ -76,6 +76,7 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
 
         var comment = commentDTO.MapToModel();
         comment.Token = GenerateToken(commentDTO);
+        comment.PostId = post.PostId;
         _context.Comments.Add(comment);
         try
         {

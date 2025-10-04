@@ -48,4 +48,11 @@ public static class MapExtensions
         Title = model.Title,
         Body = model.Body,
     };
+
+    // Map CreateCommentViewModel to CommentDTO
+    public static CommentDTO MapToObject(this CreateCommentViewModel model) => new()
+    {
+        Text = model.Text,
+        Name = model.Name,
+    };
 }

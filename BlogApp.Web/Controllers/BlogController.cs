@@ -77,7 +77,7 @@ public class BlogController(IBlogService blogService) : Controller
     // POST: Posts/this-is-a-sample-post/Delete
     [Route("posts/{slug}/delete")]
     [HttpPost]
-    public async Task<IActionResult> Delete([Bind("AdminKey")] RequireAdminViewModel deletePostRequest, string slug)
+    public async Task<IActionResult> Delete([Bind("AdminKey")] DeletePostViewModel deletePostRequest, string slug)
     {
         try
         {
@@ -100,14 +100,14 @@ public class BlogController(IBlogService blogService) : Controller
     // POST: Posts/this-is-a-sample-post/Comment
     [Route("posts/{slug}/comment")]
     [HttpPost]
-    public async Task<IActionResult> CreateComment([Bind("Text,Name")] CommentDTO newComment, string slug)
+    public async Task<IActionResult> CreateComment([Bind("Text,Name")] CreateCommentViewModel newComment, string slug)
     {
         if (!ModelState.IsValid)
             return View(newComment);
 
         try
         {
-            await _blogService.AddCommentAsync(newComment, slug);
+            await _blogService.AddCommentAsync(newComment.MapToObject(), slug);
         }
         catch (Exception ex)
         {

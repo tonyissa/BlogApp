@@ -1,5 +1,6 @@
 ﻿using BlogApp.Web.Models;
 using BlogApp.Web.Models.DTOs;
+using BlogApp.Web.Models.ViewModels;
 
 namespace BlogApp.Web.Extensions;
 
@@ -39,5 +40,12 @@ public static class MapExtensions
         DatePosted = commentDTO.DatePosted,
         Name = commentDTO.Name,
         PostId = commentDTO.PostId
+    };
+
+    // Map CreatePostViewModel to PostDTO
+    public static PostDTO MapToObject(this CreatePostViewModel model) => new()
+    {
+        Title = model.Title,
+        Body = model.Body,
     };
 }

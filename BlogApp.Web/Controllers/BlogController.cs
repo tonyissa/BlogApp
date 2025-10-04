@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BlogApp.Web.Extensions;
 using BlogApp.Web.Interfaces;
 using BlogApp.Web.Models.DTOs;
+using BlogApp.Web.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BlogApp.Web.Controllers;
 
@@ -35,24 +37,28 @@ public class BlogController(IBlogService blogService) : Controller
     // POST: Posts/Create
     [Route("posts/create")]
     [HttpPost]
-    public async Task<IActionResult> CreatePost([FromBody] PostDTO newPost, [FromHeader] string admin_key)
+    public async Task<IActionResult> CreatePost([Bind("Title,Body,AdminKey")] CreatePostViewModel createPostRequest)
     {
+        if (!ModelState.IsValid)
+            return View(createPostRequest);
 
         string slug;
         try
         {
-            slug = await _blogService.AddPostAsync(admin_key, newPost);
+            slug = await _blogService.AddPostAsync(createPostRequest.AdminKey, createPostRequest.MapToObject());
         }
         catch (UnauthorizedAccessException ex)
         {
-            return Unauthorized(ex.Message);
+            ModelState.AddModelError(nameof(createPostRequest.AdminKey), ex.Message);
+            return View(createPostRequest);
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+            return View(createPostRequest);
         }
 
-        return Ok(slug);
+        return RedirectToAction(nameof(GetPost), slug);
     }
 
     // GET: Posts/this-is-a-sample-post/Delete
@@ -71,57 +77,42 @@ public class BlogController(IBlogService blogService) : Controller
     // POST: Posts/this-is-a-sample-post/Delete
     [Route("posts/{slug}/delete")]
     [HttpPost]
-    public async Task<IActionResult> Delete([FromRoute] string slug, [FromHeader] string admin_key)
+    public async Task<IActionResult> Delete([Bind("AdminKey")] RequireAdminViewModel deletePostRequest, string slug)
     {
         try
         {
-            await _blogService.DeletePostAsync(admin_key, slug);
+            await _blogService.DeletePostAsync(deletePostRequest.AdminKey, slug);
         }
         catch (UnauthorizedAccessException ex)
         {
-            return Unauthorized(ex.Message);
+            ModelState.AddModelError(nameof(deletePostRequest.AdminKey), ex.Message);
+            return View(deletePostRequest);
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+            return View(deletePostRequest);
         }
 
-        return NoContent();
+        return RedirectToAction(nameof(Index));
     }
 
-    // POST: Posts/this-is-a-sample-post/comment
-    [Route("posts/{slug}/create-comment")]
+    // POST: Posts/this-is-a-sample-post/Comment
+    [Route("posts/{slug}/comment")]
     [HttpPost]
-    public async Task<IActionResult> CreateComment([FromRoute] string slug, [FromBody] CommentDTO newComment)
+    public async Task<IActionResult> CreateComment([Bind("Text,Name")] CommentDTO newComment, string slug)
     {
+        if (!ModelState.IsValid)
+            return View(newComment);
+
         try
         {
             await _blogService.AddCommentAsync(newComment, slug);
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
-        }
-
-        return RedirectToAction(nameof(GetPost), slug);
-    }
-
-    // POST: Posts/comment
-    [Route("posts/{slug}/delete-comment")]
-    [HttpPost]
-    public async Task<IActionResult> DeleteComment([FromHeader] string admin_key, [FromRoute] string slug, [FromQuery] string token)
-    {
-        try
-        {
-            await _blogService.DeleteCommentAsync(admin_key, token);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
+            ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+            return View(newComment);
         }
 
         return RedirectToAction(nameof(GetPost), slug);

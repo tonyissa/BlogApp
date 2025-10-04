@@ -87,25 +87,6 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
         }
     }
 
-    public async Task DeleteCommentAsync(string adminKey, string commentToken)
-    {
-        if (adminKey != _adminOptions.Value.Key)
-            throw new UnauthorizedAccessException("Invalid admin key.");
-
-        var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Token == commentToken) ?? 
-            throw new KeyNotFoundException("Comment not found.");
-
-        _context.Comments.Remove(comment);
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            throw new InvalidOperationException("Concurrency error: Comment was modified or deleted already.");
-        }
-    }
-
     public static string Sluggify(string input) => input
         .ToLower()
         .Replace("-", "")

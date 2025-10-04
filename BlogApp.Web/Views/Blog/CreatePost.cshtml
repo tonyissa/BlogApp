@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Create New Post";
+}
+
+<div class="flex h-full w-full items-center justify-center">
+    <div class="w98-border flex flex-col gap-[1rem] bg-[#C0C0C0] px-5 py-4">
+        <div class="w98-row">
+            <label class="w98-label" for="title">Title:</label>
+            <input class="w98-input" id="title" />
+        </div>
+        <div class="w98-row">
+            <label class="w98-label" for="postBody">Body:</label>
+            <textarea class="w98-textarea" id="postBody"></textarea>
+        </div>
+        <div class="w98-row">
+            <label class="w98-label" for="admin_key">Key:</label>
+            <input class="w98-input" id="admin_key" />
+        </div>
+        <div class="w98-row mt-4 justify-center!">
+            <button onclick="handleFormSubmit" type="submit" id="submit" class="w98-btn">OK</button>
+            <button type="button" id="cancel" class="w98-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelector("#submit").addEventListener("click", handleFormSubmit);
+    document.querySelector("#cancel").addEventListener("click", () => window.location.href = "/");
+
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        const title = document.getElementById("title").value;
+        const body = document.getElementById("postBody").value;
+        const adminKey = document.getElementById("admin_key").value;
+
+        const response = await fetch('/posts/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'admin_key': adminKey
+            },
+            body: JSON.stringify({ title, body })
+        })
+
+        const data = await response.text();
+        let message;
+        try {
+            message = JSON.parse(data);
+        } catch {
+            message = data;
+        }
+
+        alert(message);
+    }
+</script>

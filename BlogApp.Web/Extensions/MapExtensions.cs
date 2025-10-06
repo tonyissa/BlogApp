@@ -55,4 +55,11 @@ public static class MapExtensions
         Text = model.Text,
         Name = model.Name,
     };
+
+    // Map PostDTO to DeletePostViewModel
+    public static DeletePostViewModel MapToViewModel(this PostDTO model) => new() 
+    { 
+        Slug = model.Slug,
+        Title = model.Title,
+    };
 }

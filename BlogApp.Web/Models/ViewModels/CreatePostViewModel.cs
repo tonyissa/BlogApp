@@ -1,7 +1,8 @@
 ﻿namespace BlogApp.Web.Models.ViewModels;
 
-public class DeleteCommentViewModel
+public class CreatePostViewModel
 {
-    public string Token { get; set; }
+    public string Title { get; set; }
+    public string Body { get; set; }
     public string AdminKey { get; set; }
 }

@@ -45,7 +45,7 @@ public class BlogController(IBlogService blogService) : Controller
         }
         catch (UnauthorizedAccessException ex)
         {
-            ModelState.AddModelError("", ex.Message);
+            ModelState.AddModelError(nameof(createPostRequest.AdminKey), ex.Message);
             return View(createPostRequest);
         }
         catch (Exception ex)
@@ -67,17 +67,17 @@ public class BlogController(IBlogService blogService) : Controller
             return NotFound();
         }
 
-        return View(post);
+        return View(post.MapToViewModel());
     }
 
-    // POST: Posts/this-is-a-sample-post/Delete
-    [HttpPost("posts/{slug}/delete")]
+    // POST: Posts/Delete
+    [HttpPost("posts/delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeletePost([Bind("AdminKey")] DeletePostViewModel deletePostRequest, string slug)
+    public async Task<IActionResult> DeletePost([Bind("Slug,AdminKey")] DeletePostViewModel deletePostRequest)
     {
         try
         {
-            await _blogService.DeletePostAsync(deletePostRequest.AdminKey, slug);
+            await _blogService.DeletePostAsync(deletePostRequest.AdminKey, deletePostRequest.Slug);
         }
         catch (UnauthorizedAccessException ex)
         {

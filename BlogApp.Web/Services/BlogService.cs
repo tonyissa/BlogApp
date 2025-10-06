@@ -42,10 +42,10 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
             await _context.SaveChangesAsync();
             return post.Slug;
         }
-        catch (SqlException ex)
+        catch (DbUpdateException ex)
         {
-            if (ex.Number == 2627 || ex.Number == 2601)
-                throw new InvalidOperationException("A post with the same slug already exists.");
+            if (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2601)
+                throw new InvalidOperationException("A post with the title already exists.");
             throw;
         }
     }

@@ -1,6 +1,5 @@
 ﻿using BlogApp.Web.Extensions;
 using BlogApp.Web.Interfaces;
-using BlogApp.Web.Models.DTOs;
 using BlogApp.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,12 +10,12 @@ public class BlogController(IBlogService blogService) : Controller
     private readonly IBlogService _blogService = blogService;
 
     // GET: /
-    [Route("")]
+    [HttpGet("")]
     public async Task<IActionResult> Index() => View(await _blogService.GetAllPostsAsync());
 
     // GET: Posts/this-is-a-sample-post
-    [Route("posts/{slug}")]
-    public async Task<IActionResult> GetPost(string slug)
+    [HttpGet("posts/{slug}")]
+    public async Task<IActionResult> Details(string slug)
     {
         var post = await _blogService.GetPostAsync(slug);
         if (post == null)
@@ -28,15 +27,12 @@ public class BlogController(IBlogService blogService) : Controller
     }
 
     // GET: Posts/Create
-    [Route("posts/create")]
-    public IActionResult CreatePost()
-    {
-        return View();
-    }
+    [HttpGet("posts/create")]
+    public IActionResult CreatePost() => View();
 
     // POST: Posts/Create
-    [Route("posts/create")]
-    [HttpPost]
+    [HttpPost("posts/create")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreatePost([Bind("Title,Body,AdminKey")] CreatePostViewModel createPostRequest)
     {
         if (!ModelState.IsValid)
@@ -49,7 +45,7 @@ public class BlogController(IBlogService blogService) : Controller
         }
         catch (UnauthorizedAccessException ex)
         {
-            ModelState.AddModelError(nameof(createPostRequest.AdminKey), ex.Message);
+            ModelState.AddModelError("", ex.Message);
             return View(createPostRequest);
         }
         catch (Exception ex)
@@ -58,7 +54,7 @@ public class BlogController(IBlogService blogService) : Controller
             return View(createPostRequest);
         }
 
-        return RedirectToAction(nameof(GetPost), slug);
+        return RedirectToAction(nameof(Details), slug);
     }
 
     // GET: Posts/this-is-a-sample-post/Delete
@@ -75,9 +71,9 @@ public class BlogController(IBlogService blogService) : Controller
     }
 
     // POST: Posts/this-is-a-sample-post/Delete
-    [Route("posts/{slug}/delete")]
-    [HttpPost]
-    public async Task<IActionResult> Delete([Bind("AdminKey")] DeletePostViewModel deletePostRequest, string slug)
+    [HttpPost("posts/{slug}/delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeletePost([Bind("AdminKey")] DeletePostViewModel deletePostRequest, string slug)
     {
         try
         {
@@ -98,8 +94,8 @@ public class BlogController(IBlogService blogService) : Controller
     }
 
     // POST: Posts/this-is-a-sample-post/Comment
-    [Route("posts/{slug}/comment")]
-    [HttpPost]
+    [HttpPost("posts/{slug}/comment")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateComment([Bind("Text,Name")] CreateCommentViewModel newComment, string slug)
     {
         if (!ModelState.IsValid)
@@ -115,6 +111,6 @@ public class BlogController(IBlogService blogService) : Controller
             return View(newComment);
         }
 
-        return RedirectToAction(nameof(GetPost), slug);
+        return RedirectToAction(nameof(Details), slug);
     }
 }

@@ -2,7 +2,6 @@
     ViewData["Title"] = "Create New Post";
 }
 @using BlogApp.Web.Models.ViewModels
-@using BlogApp.Web.Controllers
 @model CreatePostViewModel
 
 <div class="flex h-full w-full items-center justify-center">
@@ -23,7 +22,7 @@
             <button type="submit" class="w98-btn">OK</button>
             <button type="button" id="cancel" class="w98-btn">Cancel</button>
         </div>
-        <div class="text-center text-sm text-red-500" asp-validation-summary="ModelOnly"></div>
+        <div class="text-center text-sm text-red-500" asp-validation-summary="All"></div>
     </form>
 </div>
 

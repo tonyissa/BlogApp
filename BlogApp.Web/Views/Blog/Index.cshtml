@@ -18,6 +18,7 @@
 
 <script>
     let contextMenuExists = false;
+    let browserAuxMenuDisabled = true;
     const main = document.querySelector("main");
 
     main.addEventListener("mousedown", () => {
@@ -29,9 +30,8 @@
     });
 
     main.addEventListener("auxclick", (e) => {
-        const contextMenu = document.createElement("div");
-        contextMenu.classList.add("context-menu");
-        contextMenu.classList.add("w98-border");
+        const contextMenu = createContextMenu();
+
         const createPageItem = document.createElement("a");
         createPageItem.href = `/posts/create`;
         createPageItem.classList.add("context-menu-item");
@@ -53,9 +53,8 @@
         item.addEventListener("auxclick", (e) => {
             e.stopPropagation();
             item.classList.add("w98-item-toggled");
-            const contextMenu = document.createElement("div");
-            contextMenu.classList.add("context-menu");
-            contextMenu.classList.add("w98-border");
+
+            const contextMenu = createContextMenu();
             const deletePageItem = document.createElement("a");
             deletePageItem.href = `/posts/${item.getAttribute("data-slug")}/delete`;
             deletePageItem.classList.add("context-menu-item");
@@ -73,6 +72,14 @@
     });
 
     window.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
+        if (browserAuxMenuDisabled)
+            e.preventDefault();
     });
+
+    const createContextMenu = () => {
+        const contextMenu = document.createElement("div");
+        contextMenu.classList.add("context-menu");
+        contextMenu.classList.add("w98-border");
+        return contextMenu;
+    }
 </script>

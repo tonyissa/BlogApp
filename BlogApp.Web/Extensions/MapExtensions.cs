@@ -57,7 +57,7 @@ public static class MapExtensions
     };
 
     // Map PostDTO to DeletePostViewModel
-    public static DeletePostViewModel MapToViewModel(this PostDTO model) => new() 
+    public static DeletePostViewModel MapToDeleteViewModel(this PostDTO model) => new() 
     { 
         Slug = model.Slug,
         Title = model.Title,

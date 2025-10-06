@@ -67,14 +67,17 @@ public class BlogController(IBlogService blogService) : Controller
             return NotFound();
         }
 
-        return View(post.MapToViewModel());
+        return View(post.MapToDeleteViewModel());
     }
 
     // POST: Posts/Delete
-    [HttpPost("posts/delete")]
+    [HttpPost("posts/{slug}/delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeletePost([Bind("Slug,AdminKey")] DeletePostViewModel deletePostRequest)
+    public async Task<IActionResult> DeletePost([Bind("Title,Slug,AdminKey")] DeletePostViewModel deletePostRequest)
     {
+        if (!ModelState.IsValid)
+            return View(deletePostRequest);
+
         try
         {
             await _blogService.DeletePostAsync(deletePostRequest.AdminKey, deletePostRequest.Slug);

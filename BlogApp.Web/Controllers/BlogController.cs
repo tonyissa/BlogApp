@@ -23,7 +23,7 @@ public class BlogController(IBlogService blogService) : Controller
             return NotFound();
         }
 
-        return View(post);
+        return View(post.MapToDetailsViewModel());
     }
 
     // GET: Posts/Create
@@ -54,7 +54,7 @@ public class BlogController(IBlogService blogService) : Controller
             return View(createPostRequest);
         }
 
-        return RedirectToAction(nameof(Details), slug);
+        return RedirectToAction(nameof(Details), new { slug });
     }
 
     // GET: Posts/this-is-a-sample-post/Delete
@@ -99,21 +99,30 @@ public class BlogController(IBlogService blogService) : Controller
     // POST: Posts/this-is-a-sample-post/Comment
     [HttpPost("posts/{slug}/comment")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateComment([Bind("Text,Name")] CreateCommentViewModel newComment, string slug)
+    public async Task<IActionResult> CreateComment([Bind("CommentText,CommentName,Slug")] CreateCommentViewModel newComment, string slug)
     {
+        var post = await _blogService.GetPostAsync(slug);
+        if (post == null)
+        {
+            return NotFound();
+        }
+
+        var detailsModel = post.MapToDetailsViewModel();
+        ViewData["CommentModel"] = newComment;
+
         if (!ModelState.IsValid)
-            return View(newComment);
+            return View("Details", detailsModel);
 
         try
         {
-            await _blogService.AddCommentAsync(newComment.MapToObject(), slug);
+            await _blogService.AddCommentAsync(newComment.MapToObject(), newComment.Slug);
         }
         catch (Exception ex)
         {
             ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
-            return View(newComment);
+            return View("Details", detailsModel);
         }
 
-        return RedirectToAction(nameof(Details), slug);
+        return RedirectToAction(nameof(Details), new { slug });
     }
 }

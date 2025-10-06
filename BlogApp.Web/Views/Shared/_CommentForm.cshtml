@@ -1,0 +1,20 @@
+﻿@using BlogApp.Web.Models.ViewModels
+@model CreateCommentViewModel
+
+<div class="w98-border flex flex-col bg-[#C0C0C0] px-3 py-2">
+    <form asp-controller="Blog" asp-action="CreateComment" asp-route-slug="@Model.Slug">
+        <div class="w98-row">
+            <label asp-for="CommentName" class="w98-label">Your Name:</label>
+            <input asp-for="CommentName" class="w98-input" />
+        </div>
+        <div class="w98-row">
+            <label asp-for="CommentText" class="w98-label">Comment:</label>
+            <textarea asp-for="CommentText" class="w98-textarea"></textarea>
+        </div>
+        <input type="hidden" asp-for="Slug" />
+        <div class="w98-row justify-center!">
+            <button type="submit" class="w98-btn">Post Comment</button>
+        </div>
+        <div class="text-center text-sm text-red-500" asp-validation-summary="All"></div>
+    </form>
+</div>

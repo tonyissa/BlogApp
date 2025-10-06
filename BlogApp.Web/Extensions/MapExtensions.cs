@@ -49,17 +49,26 @@ public static class MapExtensions
         Body = model.Body,
     };
 
+    // Map PostDTO to DeletePostViewModel
+    public static DeletePostViewModel MapToDeleteViewModel(this PostDTO postDTO) => new() 
+    { 
+        Slug = postDTO.Slug,
+        Title = postDTO.Title,
+    };
+
+    // Map PostDTO to DetailsViewModel
+    public static DetailsViewModel MapToDetailsViewModel(this PostDTO postDTO) => new()
+    {
+        Title = postDTO.Title,
+        Body = postDTO.Body,
+        Comments = postDTO.Comments,
+        Slug = postDTO.Slug
+    };
+
     // Map CreateCommentViewModel to CommentDTO
     public static CommentDTO MapToObject(this CreateCommentViewModel model) => new()
     {
-        Text = model.Text,
-        Name = model.Name,
-    };
-
-    // Map PostDTO to DeletePostViewModel
-    public static DeletePostViewModel MapToDeleteViewModel(this PostDTO model) => new() 
-    { 
-        Slug = model.Slug,
-        Title = model.Title,
+        Text = model.CommentText,
+        Name = model.CommentName
     };
 }

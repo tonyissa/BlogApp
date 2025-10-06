@@ -1,0 +1,18 @@
+﻿@using BlogApp.Web.Models.DTOs
+@model IEnumerable<CommentDTO>
+
+<div class="w98-border flex flex-col gap-[.5rem] bg-[#C0C0C0] px-3 py-2">
+    @foreach (var comment in Model)
+    {
+        <div class="w98-row">
+            <div>
+                <label class="w98-label">Title:</label>
+                <input class="w98-input" disabled value="@comment.Name" />
+            </div>
+            <div>
+                <label class="w98-label">Comment:</label>
+                <input class="w98-input" disabled value="@comment.Text" />
+            </div>
+        </div>
+    }
+</div>

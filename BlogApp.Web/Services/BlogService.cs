@@ -25,6 +25,7 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
     public async Task<PostDTO?> GetPostAsync(string slug) => 
         await _context.Posts
             .Where(p => p.Slug == slug)
+            .Include(p => p.Comments)
             .Select(p => p.MapToObject())
             .FirstOrDefaultAsync();
 

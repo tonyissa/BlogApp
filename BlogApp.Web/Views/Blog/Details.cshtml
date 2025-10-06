@@ -1,0 +1,25 @@
+﻿@using BlogApp.Web.Models.ViewModels
+@model DetailsViewModel
+
+<div class="flex h-full w-full flex-col items-center justify-center gap-[2rem]">
+    <div class="w98-border flex flex-col gap-[1rem] bg-[#C0C0C0] px-5 py-4">
+        <div class="w98-row">
+            <label asp-for="Title" class="w98-label">Title:</label>
+            <input asp-for="Title" class="w98-input" disabled />
+        </div>
+        <div class="w98-row">
+            <label asp-for="Body" class="w98-label">Body:</label>
+            <textarea asp-for="Body" class="w98-textarea resize!" disabled></textarea>
+        </div>
+    </div>
+    @{
+        var commentModel = ViewData["CommentModel"] as CreateCommentViewModel 
+            ?? new CreateCommentViewModel { Slug = Model.Slug };
+    }
+    <partial name="_CommentForm" model="@commentModel" />
+    <partial name="_CommentView" model="@Model.Comments" />
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

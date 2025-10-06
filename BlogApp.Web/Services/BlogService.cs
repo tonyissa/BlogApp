@@ -88,12 +88,11 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
         }
     }
 
-    public static string Sluggify(string input) => input
+    public static string Sluggify(string input) => new([.. input
         .ToLower()
         .Replace("-", "")
         .Replace(' ', '-')
-        .Where(c => char.IsLetterOrDigit(c) || c == '-')
-        .ToString() ?? "";
+        .Where(c => char.IsLetterOrDigit(c) || c == '-')]);
 
     public static string GenerateToken(CommentDTO comment)
     {

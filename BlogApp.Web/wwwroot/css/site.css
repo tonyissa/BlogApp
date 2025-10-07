@@ -8,58 +8,17 @@ body {
     display: grid;
 }
 
-@media (orientation: portrait) {
+@media (min-width: 768px) {
     .grid-cont {
-        grid-template-columns: repeat(auto-fit, 50%);
-    }
-
-    @media (min-width: 500px) {
-        .grid-cont {
-            grid-template-columns: repeat(auto-fit, 33vw);
-            gap: .25rem;
-        }
-    }
-
-    @media (min-width: 640px) {
-        .grid-cont {
-            grid-template-columns: repeat(auto-fit, 25vw);
-            gap: .5rem;
-        }
-    }
-
-    @media (min-width: 768px) {
-        .grid-cont {
-            grid-template-columns: repeat(auto-fit, min(15vw, 150px));
-            gap: .75rem;
-        }
+        grid-template-columns: repeat(auto-fit, 9vw);
+        gap: .75rem;
     }
 }
 
-@media (orientation: landscape) {
+@media (min-width: 1920px) {
     .grid-cont {
-        grid-template-columns: repeat(auto-fit, 25vw);
-        gap: .25rem;
-    }
-
-    @media (min-width: 500px) {
-        .grid-cont {
-            grid-template-columns: repeat(auto-fit, 22vw);
-            gap: .5rem;
-        }
-    }
-
-    @media (min-width: 768px) {
-        .grid-cont {
-            grid-template-columns: repeat(auto-fit, 9vw);
-            gap: .75rem;
-        }
-    }
-
-    @media (min-width: 1920px) {
-        .grid-cont {
-            grid-template-columns: repeat(auto-fit, 6.6vw);
-            gap: 1rem;
-        }
+        grid-template-columns: repeat(auto-fit, 6.6vw);
+        gap: 1rem;
     }
 }
 
@@ -93,7 +52,6 @@ body {
 }
 
 .w98-label {
-    display: inline-block;
     margin-bottom: 6px;
     font-size: 12px;
     vertical-align: middle;
@@ -101,7 +59,6 @@ body {
 }
 
 .w98-input {
-    display: inline-block;
     background: #E0E0E0;
     padding: 4px 6px;
     font-size: 12px;
@@ -111,7 +68,8 @@ body {
     border-bottom: 2px solid #808080;
     border-right: 2px solid #808080;
     outline: none;
-    min-width: 160px;
+    flex-grow: 0;
+    flex-shrink: 1;
 }
 
 .w98-textarea {
@@ -135,7 +93,6 @@ body {
 }
 
 .w98-btn {
-    display: inline-block;
     padding: 4px 10px;
     font-size: 12px;
     line-height: 1;

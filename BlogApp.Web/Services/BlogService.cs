@@ -74,6 +74,12 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
         }
     }
 
+    public async Task<CommentDTO?> GetCommentAsync(string token) => 
+        await _context.Comments
+            .Where(p => p.Token == token)
+            .Select(c => c.MapToObject())
+            .FirstOrDefaultAsync();
+
     public async Task AddCommentAsync(CommentDTO commentDTO, string slug)
     {
         var post = await _context.Posts.FirstOrDefaultAsync(p => p.Slug == slug) ?? 
@@ -92,8 +98,6 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
             throw new DbUpdateException("An error occurred with this request.");
         }
     }
-
-
 
     public async Task DeleteCommentAsync(string adminKey, string token)
     {

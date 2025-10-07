@@ -18,9 +18,9 @@
             <label asp-for="AdminKey" class="w98-label">Key:</label>
             <input asp-for="AdminKey" class="w98-input" />
         </div>
-        <div class="w98-row mt-4 justify-center!">
+        <div class="w98-row mt-2 justify-center!">
             <button type="submit" class="w98-btn">OK</button>
-            <button type="button" id="cancel" class="w98-btn">Cancel</button>
+            <a href="/" class="w98-btn">Cancel</a>
         </div>
         <div class="text-center text-sm text-red-500" asp-validation-summary="All"></div>
     </form>
@@ -28,7 +28,4 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        document.querySelector("#cancel").addEventListener("click", () => window.location.href = "/");
-    </script>
 }

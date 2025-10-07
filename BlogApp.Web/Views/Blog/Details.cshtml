@@ -20,7 +20,7 @@
             ?? new CreateCommentViewModel { Slug = Model.Slug };
     }
     <partial name="_CommentForm" model="@commentModel" />
-    <partial name="_CommentView" model="@Model.Comments" />
+    <partial name="_CommentView" model="@Model.Comments" view-data="new(ViewData)" view-data-slug="@Model.Slug" />
 </div>
 
 @section Scripts {

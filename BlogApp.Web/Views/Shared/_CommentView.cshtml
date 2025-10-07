@@ -13,7 +13,10 @@
                 <div class="w98-input w-[160px]">@comment.Text</div>
                 <div class="w98-label">Date:</div>
                 <div class="w98-input">@comment.DatePosted.ToString("d")</div>
-                <a class="w98-btn" href="./@comment.Token">Delete</a>
+                @{
+                    var slug = @ViewData["Slug"];
+                }
+                <a class="w98-btn" href="/posts/@slug/delete-comment/@comment.Token">Delete</a>
             </div>
         }
     </div>

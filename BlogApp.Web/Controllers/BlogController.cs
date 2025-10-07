@@ -137,7 +137,9 @@ public class BlogController(IBlogService blogService) : Controller
 
     // POST: Posts/this-is-a-sample-post/delete-comment/da2dera4va2dad-a2d2dad2-d2d1
     [HttpPost("posts/{slug}/delete-comment/{token}")]
-    public async Task<IActionResult> DeleteComment([Bind("AdminKey")] DeleteCommentViewModel deleteCommentVM, string slug)
+    public async Task<IActionResult> DeleteComment(
+        [Bind("Token,Author,Comment,DatePosted,AdminKey")] DeleteCommentViewModel deleteCommentVM, 
+        string slug)
     {
         if (!ModelState.IsValid)
             return View(deleteCommentVM);

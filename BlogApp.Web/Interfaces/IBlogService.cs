@@ -9,4 +9,5 @@ public interface IBlogService
     Task<string> AddPostAsync(string adminKey, PostDTO postDTO);
     Task DeletePostAsync(string adminKey, string slug);
     Task AddCommentAsync(CommentDTO commentDTO, string slug);
+    Task DeleteCommentAsync(string adminKey, string token);
 }

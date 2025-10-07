@@ -93,6 +93,31 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
         }
     }
 
+
+
+    public async Task DeleteCommentAsync(string adminKey, string token)
+    {
+        if (adminKey != _adminOptions.Value.Key)
+            throw new UnauthorizedAccessException("Invalid admin key.");
+
+        var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Token == token)
+            ?? throw new KeyNotFoundException(token);
+
+        _context.Comments.Remove(comment);
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new InvalidOperationException("Concurrency error: Comment/Post was modified or deleted already.");
+        }
+        catch (Exception)
+        {
+            throw new DbUpdateException("An error occurred with this request.");
+        }
+    }
+
     public static string Sluggify(string input) => new([.. input
         .ToLower()
         .Replace("-", "")

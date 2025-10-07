@@ -43,11 +43,11 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
             await _context.SaveChangesAsync();
             return post.Slug;
         }
-        catch (DbUpdateException ex)
+        catch (Exception ex)
         {
             if (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2601)
                 throw new InvalidOperationException("A post with the title already exists.");
-            throw;
+            throw new DbUpdateException("An error occurred with this request.");
         }
     }
 
@@ -68,6 +68,10 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
         {
             throw new InvalidOperationException("Concurrency error: Comment was modified or deleted already.");
         }
+        catch (Exception)
+        {
+            throw new DbUpdateException("An error occurred with this request.");
+        }
     }
 
     public async Task AddCommentAsync(CommentDTO commentDTO, string slug)
@@ -83,9 +87,9 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException)
+        catch (Exception)
         {
-            throw new InvalidOperationException("Concurrency error: Post was modified or deleted already.");
+            throw new DbUpdateException("An error occurred with this request.");
         }
     }
 

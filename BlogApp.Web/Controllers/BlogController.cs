@@ -19,9 +19,7 @@ public class BlogController(IBlogService blogService) : Controller
     {
         var post = await _blogService.GetPostAsync(slug);
         if (post == null)
-        {
             return NotFound();
-        }
 
         return View(post.MapToDetailsViewModel());
     }
@@ -33,25 +31,25 @@ public class BlogController(IBlogService blogService) : Controller
     // POST: Posts/Create
     [HttpPost("posts/create")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreatePost([Bind("Title,Body,AdminKey")] CreatePostViewModel createPostRequest)
+    public async Task<IActionResult> CreatePost([Bind("Title,Body,AdminKey")] CreatePostViewModel createPostVM)
     {
         if (!ModelState.IsValid)
-            return View(createPostRequest);
+            return View(createPostVM);
 
         string slug;
         try
         {
-            slug = await _blogService.AddPostAsync(createPostRequest.AdminKey, createPostRequest.MapToObject());
+            slug = await _blogService.AddPostAsync(createPostVM.AdminKey, createPostVM.MapToObject());
         }
         catch (UnauthorizedAccessException ex)
         {
-            ModelState.AddModelError(nameof(createPostRequest.AdminKey), ex.Message);
-            return View(createPostRequest);
+            ModelState.AddModelError(nameof(createPostVM.AdminKey), ex.Message);
+            return View(createPostVM);
         }
         catch (Exception ex)
         {
             ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
-            return View(createPostRequest);
+            return View(createPostVM);
         }
 
         return RedirectToAction(nameof(Details), new { slug });
@@ -63,34 +61,34 @@ public class BlogController(IBlogService blogService) : Controller
     {
         var post = await _blogService.GetPostAsync(slug);
         if (post == null)
-        {
             return NotFound();
-        }
 
         return View(post.MapToDeleteViewModel());
     }
 
-    // POST: Posts/Delete
+    // POST: Posts/this-is-a-sample-post/Delete
     [HttpPost("posts/{slug}/delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeletePost([Bind("Title,Slug,AdminKey")] DeletePostViewModel deletePostRequest)
+    public async Task<IActionResult> DeletePost(
+        [Bind("Title,Slug,AdminKey")] DeletePostViewModel deletePostVM, 
+        string slug)
     {
         if (!ModelState.IsValid)
-            return View(deletePostRequest);
+            return View(deletePostVM);
 
         try
         {
-            await _blogService.DeletePostAsync(deletePostRequest.AdminKey, deletePostRequest.Slug);
+            await _blogService.DeletePostAsync(deletePostVM.AdminKey, slug);
         }
         catch (UnauthorizedAccessException ex)
         {
-            ModelState.AddModelError(nameof(deletePostRequest.AdminKey), ex.Message);
-            return View(deletePostRequest);
+            ModelState.AddModelError(nameof(deletePostVM.AdminKey), ex.Message);
+            return View(deletePostVM);
         }
         catch (Exception ex)
         {
             ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
-            return View(deletePostRequest);
+            return View(deletePostVM);
         }
 
         return RedirectToAction(nameof(Index));
@@ -99,28 +97,64 @@ public class BlogController(IBlogService blogService) : Controller
     // POST: Posts/this-is-a-sample-post/Comment
     [HttpPost("posts/{slug}/comment")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateComment([Bind("CommentText,CommentName,Slug")] CreateCommentViewModel newComment, string slug)
+    public async Task<IActionResult> CreateComment(
+        [Bind("CommentText,CommentName,Slug")] CreateCommentViewModel createCommentVM, 
+        string slug)
     {
         var post = await _blogService.GetPostAsync(slug);
         if (post == null)
-        {
             return NotFound();
-        }
 
         var detailsModel = post.MapToDetailsViewModel();
-        ViewData["CommentModel"] = newComment;
+        ViewData["CommentModel"] = createCommentVM;
 
         if (!ModelState.IsValid)
             return View("Details", detailsModel);
 
         try
         {
-            await _blogService.AddCommentAsync(newComment.MapToObject(), newComment.Slug);
+            await _blogService.AddCommentAsync(createCommentVM.MapToObject(), createCommentVM.Slug);
         }
         catch (Exception ex)
         {
             ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
             return View("Details", detailsModel);
+        }
+
+        return RedirectToAction(nameof(Details), new { slug });
+    }
+
+    // GET: Posts/this-is-a-sample-post/delete-comment/da2dera4va2dad-a2d2dad2-d2d1
+    [HttpGet("posts/{slug}/delete-comment/{token}")]
+    public async Task<IActionResult> DeleteComment(string token)
+    {
+        var comment = await _blogService.GetCommentAsync(token);
+        if (comment == null)
+            return NotFound();
+
+        return View(comment.MapToDeleteViewModel());
+    }
+
+    // POST: Posts/this-is-a-sample-post/delete-comment/da2dera4va2dad-a2d2dad2-d2d1
+    [HttpPost("posts/{slug}/delete-comment/{token}")]
+    public async Task<IActionResult> DeleteComment([Bind("AdminKey")] DeleteCommentViewModel deleteCommentVM, string slug)
+    {
+        if (!ModelState.IsValid)
+            return View(deleteCommentVM);
+
+        try
+        {
+            await _blogService.DeleteCommentAsync(deleteCommentVM.AdminKey, deleteCommentVM.Token);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            ModelState.AddModelError(nameof(deleteCommentVM.AdminKey), ex.Message);
+            return View(deleteCommentVM);
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+            return View(deleteCommentVM);
         }
 
         return RedirectToAction(nameof(Details), new { slug });

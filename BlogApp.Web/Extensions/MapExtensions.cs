@@ -30,7 +30,8 @@ public static class MapExtensions
     {
         Text = comment.Text,
         DatePosted = comment.DatePosted,
-        Name = comment.Name
+        Name = comment.Name,
+        Token = comment.Token
     };
 
     // Map CommentDTO to Comment
@@ -70,5 +71,14 @@ public static class MapExtensions
     {
         Text = model.CommentText,
         Name = model.CommentName
+    };
+
+    // Map CommentDTO to DeleteCommentViewModel
+    public static DeleteCommentViewModel MapToDeleteViewModel(this CommentDTO commentDTO) => new() 
+    { 
+        Token = commentDTO.Token,
+        Author = commentDTO.Name,
+        Comment = commentDTO.Text,
+        DatePosted = commentDTO.DatePosted,
     };
 }

@@ -13,7 +13,7 @@ public class BlogServiceTests
     {
         // Arrange
         var posts = TestHelper.CreatePosts(5);
-        var context = TestHelper.CreateMockBlogContext(posts: posts).Object;
+        var context = TestHelper.CreateMockBlogContext(posts).Object;
         var service = TestHelper.CreateMockBlogService(context);
 
         // Act
@@ -30,7 +30,7 @@ public class BlogServiceTests
     {
         // Arrange
         var posts = TestHelper.CreatePosts(1);
-        var context = TestHelper.CreateMockBlogContext(posts: posts).Object;
+        var context = TestHelper.CreateMockBlogContext(posts).Object;
         var service = TestHelper.CreateMockBlogService(context);
 
         // Act
@@ -46,7 +46,7 @@ public class BlogServiceTests
     {
         // Arrange
         var posts = TestHelper.CreatePosts(1);
-        var context = TestHelper.CreateMockBlogContext(posts: posts).Object;
+        var context = TestHelper.CreateMockBlogContext(posts).Object;
         var service = TestHelper.CreateMockBlogService(context);
 
         // Act
@@ -90,7 +90,7 @@ public class BlogServiceTests
     {
         // Arrange
         var posts = TestHelper.CreatePosts(1);
-        var context = TestHelper.CreateMockBlogContext(posts: posts);
+        var context = TestHelper.CreateMockBlogContext(posts);
         var service = TestHelper.CreateMockBlogService(context.Object);
 
         // Act
@@ -106,7 +106,7 @@ public class BlogServiceTests
     {
         // Arrange
         var posts = TestHelper.CreatePosts(1);
-        var context = TestHelper.CreateMockBlogContext(posts: posts);
+        var context = TestHelper.CreateMockBlogContext(posts);
         var service = TestHelper.CreateMockBlogService(context.Object);
 
         // Act & Assert
@@ -119,12 +119,45 @@ public class BlogServiceTests
     {
         // Arrange
         var posts = TestHelper.CreatePosts(1);
-        var context = TestHelper.CreateMockBlogContext(posts: posts);
+        var context = TestHelper.CreateMockBlogContext(posts);
         var service = TestHelper.CreateMockBlogService(context.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
             await service.DeletePostAsync("test-admin-key", "invalid-slug"));
+    }
+
+    [Fact]
+    public async Task GetCommentAsync_WithValidToken_ShouldReturnComment()
+    {
+        // Arrange
+        var posts = TestHelper.CreatePosts(1);
+        var comments = TestHelper.CreateComments(1, 1);
+        var context = TestHelper.CreateMockBlogContext(posts, comments).Object;
+        var service = TestHelper.CreateMockBlogService(context);
+
+        // Act
+        var result = await service.GetCommentAsync(comments.First().Token);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(comments.First().Token, result.Token);
+    }
+
+    [Fact]
+    public async Task GetCommentAsync_WithInvalidToken_ShouldReturnNull()
+    {
+        // Arrange
+        var posts = TestHelper.CreatePosts(1);
+        var comments = TestHelper.CreateComments(1, 1);
+        var context = TestHelper.CreateMockBlogContext(posts, comments).Object;
+        var service = TestHelper.CreateMockBlogService(context);
+
+        // Act
+        var result = await service.GetCommentAsync("invalid-token");
+
+        // Assert
+        Assert.Null(result);
     }
 
     [Fact]
@@ -156,5 +189,50 @@ public class BlogServiceTests
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
             await service.AddCommentAsync(comments.First().MapToObject(), "invalid-slug"));
+    }
+
+    [Fact]
+    public async Task DeleteCommentAsync_WithValidAdminKey_ShouldDeleteComment()
+    {
+        // Arrange
+        var posts = TestHelper.CreatePosts(1);
+        var comments = TestHelper.CreateComments(1, 1);
+        var context = TestHelper.CreateMockBlogContext(posts, comments);
+        var service = TestHelper.CreateMockBlogService(context.Object);
+
+        // Act
+        await service.DeleteCommentAsync("test-admin-key", comments.First().Token);
+
+        // Assert
+        context.Verify(c => c.Comments.Remove(It.IsAny<Comment>()));
+        context.Verify(c => c.SaveChangesAsync(default), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteCommentAsync_WithoutValidAdminKey_ShouldThrowUnauthorizedAccessException()
+    {
+        // Arrange
+        var posts = TestHelper.CreatePosts(1);
+        var comments = TestHelper.CreateComments(1, 1);
+        var context = TestHelper.CreateMockBlogContext(posts, comments);
+        var service = TestHelper.CreateMockBlogService(context.Object);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
+            await service.DeleteCommentAsync("invalid-admin-key", comments.First().Token));
+    }
+
+    [Fact]
+    public async Task DeleteCommentAsync_WithInvalidToken_ShouldThrowKeyNotFoundException()
+    {
+        // Arrange
+        var posts = TestHelper.CreatePosts(1);
+        var comments = TestHelper.CreateComments(1, 1);
+        var context = TestHelper.CreateMockBlogContext(posts, comments);
+        var service = TestHelper.CreateMockBlogService(context.Object);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
+            await service.DeleteCommentAsync("test-admin-key", "invalid-token"));
     }
 }

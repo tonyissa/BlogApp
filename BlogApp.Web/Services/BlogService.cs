@@ -25,7 +25,8 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
     public async Task<PostDTO?> GetPostAsync(string slug) => 
         await _context.Posts
             .Where(p => p.Slug == slug)
-            .Include(p => p.Comments)
+            .Include(p => 
+                p.Comments.OrderBy(c => c.DatePosted))
             .Select(p => p.MapToObject())
             .FirstOrDefaultAsync();
 
@@ -78,6 +79,7 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
         await _context.Comments
             .Where(p => p.Token == token)
             .Select(c => c.MapToObject())
+            .OrderByDescending(p => p.DatePosted)
             .FirstOrDefaultAsync();
 
     public async Task AddCommentAsync(CommentDTO commentDTO, string slug)

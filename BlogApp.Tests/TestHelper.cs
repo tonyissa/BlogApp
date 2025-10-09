@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BlogApp.Tests;
 
@@ -72,5 +73,22 @@ public static class TestHelper
         }
 
         return comments;
+    }
+
+    public static FormUrlEncodedContent MapToFormEncodedData(object data)
+        => new(GetKeyValuePairs(data));
+
+    private static IEnumerable<KeyValuePair<string, string>> GetKeyValuePairs(object data)
+    {
+        var objectType = data.GetType();
+        var objectProps = objectType.GetProperties();
+
+        foreach (var property in objectProps)
+        {
+            var key = property.Name;
+            var value = property.GetValue(data);
+
+            yield return new KeyValuePair<string, string>(key, (string)value!);
+        }
     }
 }

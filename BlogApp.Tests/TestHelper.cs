@@ -87,8 +87,18 @@ public static class TestHelper
         {
             var key = property.Name;
             var value = property.GetValue(data);
+            string formattedValue;
 
-            yield return new KeyValuePair<string, string>(key, (string)value!);
+            if (value is DateTime dt)
+            {
+                formattedValue = dt.ToString("O");
+            } 
+            else
+            {
+                formattedValue = (string)value!;
+            }
+
+            yield return new KeyValuePair<string, string>(key, formattedValue);
         }
     }
 }

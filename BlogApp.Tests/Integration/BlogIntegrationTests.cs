@@ -41,7 +41,7 @@ public class BlogIntegrationTests : IClassFixture<SqlServerContainerFixture>, IA
     }
 
     [Fact]
-    public async Task Index_WithSeededData_ShouldReturnAllPosts()
+    public async Task Index_WithSeededData_ShouldReturnViewWithAllPosts()
     {
         // Arrange
         var posts = TestHelper.CreatePosts(5);
@@ -62,7 +62,7 @@ public class BlogIntegrationTests : IClassFixture<SqlServerContainerFixture>, IA
     }
 
     [Fact]
-    public async Task CreatePost_WithInvalidAdminKey_ShouldReturnUnauthorized()
+    public async Task CreatePost_WithInvalidAdminKey_ShouldReturnViewWithAdminKeyError()
     {
         // Arrange
         var post = TestHelper.CreatePosts(1).First();
@@ -104,7 +104,7 @@ public class BlogIntegrationTests : IClassFixture<SqlServerContainerFixture>, IA
     }
 
     [Fact]
-    public async Task CreatePost_WithDuplicateSlug_ShouldReturnBadRequest()
+    public async Task CreatePost_WithDuplicateSlug_ShouldReturnViewWithModelValidationErrors()
     {
         // Arrange
         var post = TestHelper.CreatePosts(1).First();
@@ -126,7 +126,7 @@ public class BlogIntegrationTests : IClassFixture<SqlServerContainerFixture>, IA
         var resultString = await response.Content.ReadAsStringAsync();
 
         // Assert
-        Assert.Contains(post.Title, resultString);
+        Assert.Contains("An error occurred:", resultString);
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public class BlogIntegrationTests : IClassFixture<SqlServerContainerFixture>, IA
     }
 
     [Fact]
-    public async Task DeletePost_WithInvalidAdminKey_ShouldReturnUnauthorized()
+    public async Task DeletePost_WithInvalidAdminKey_ShouldReturnViewWithAdminKeyError()
     {
         // Arrange
         var post = TestHelper.CreatePosts(1).First();
@@ -183,7 +183,7 @@ public class BlogIntegrationTests : IClassFixture<SqlServerContainerFixture>, IA
     }
 
     [Fact]
-    public async Task DeletePost_WithInvalidSlug_ShouldReturnSamePageWithModelValidationErrors()
+    public async Task DeletePost_WithInvalidSlug_ShouldReturnViewWithModelValidationErrors()
     {
         // Arrange
         var post = TestHelper.CreatePosts(1).First();
@@ -234,5 +234,67 @@ public class BlogIntegrationTests : IClassFixture<SqlServerContainerFixture>, IA
 
         // Assert
         Assert.Contains(postedComment.Token, resultString);
+    }
+
+    [Fact]
+    public async Task DeleteComment_WithInvalidAdminKey_ShouldReturnViewWithAdminKeyError()
+    {
+        // Arrange
+        var post = TestHelper.CreatePosts(1).First();
+        var comment = TestHelper.CreateComments(1, 1).First();
+        using var scope = _app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
+        context.Posts.Add(post);
+        await context.SaveChangesAsync();
+        context.Comments.Add(comment);
+        await context.SaveChangesAsync();
+
+        var deleteCommentVM = new DeleteCommentViewModel()
+        {
+            Token = comment.Token,
+            Author = comment.Name,
+            Comment = comment.Text,
+            AdminKey = "invalid-admin-key"
+        };
+        var formData = TestHelper.MapToFormEncodedData(deleteCommentVM);
+
+        // Act
+        var response = await _client.PostAsync($"/posts/{post.Slug}/delete-comment/{comment.Token}", formData);
+        var resultString = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        Assert.Contains("Invalid admin key.", resultString);
+    }
+
+    [Fact]
+    public async Task DeleteComment_WithValidAdminKey_ShouldReturnViewWithoutComment()
+    {
+        // Arrange
+        var post = TestHelper.CreatePosts(1).First();
+        var comment = TestHelper.CreateComments(1, 1).First();
+        using var scope = _app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
+        context.Posts.Add(post);
+        await context.SaveChangesAsync();
+        context.Comments.Add(comment);
+        await context.SaveChangesAsync();
+
+        var deleteCommentVM = new DeleteCommentViewModel()
+        {
+            Token = comment.Token,
+            Author = comment.Name,
+            Comment = comment.Text,
+            AdminKey = "test-admin-key",
+            DatePosted = comment.DatePosted
+        };
+        var formData = TestHelper.MapToFormEncodedData(deleteCommentVM);
+
+        // Act
+        var response = await _client.PostAsync($"/posts/{post.Slug}/delete-comment/{comment.Token}", formData);
+        var resultString = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        Assert.Contains(post.Title, resultString);
+        Assert.DoesNotContain(comment.Token, resultString);
     }
 }

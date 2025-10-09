@@ -1,8 +1,8 @@
 ﻿using BlogApp.Web.Data;
-using BlogApp.Web.Extensions;
+using BlogApp.Web.Models;
+using BlogApp.Web.Models.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
-using System.Net.Http.Json;
 
 namespace BlogApp.Tests.Integration;
 
@@ -23,24 +23,6 @@ public class BlogIntegrationTests : IClassFixture<SqlServerContainerFixture>, IA
     public async Task InitializeAsync() => await _app.ResetDatabaseAsync();
     public Task DisposeAsync() => Task.CompletedTask;
 
-    //[Fact]
-    //public async Task GetPost_WithValidSlug_ShouldReturnPost()
-    //{
-    //    // Arrange
-    //    var posts = TestHelper.CreatePosts(1);
-    //    using var scope = _app.Services.CreateScope();
-    //    var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
-    //    context.Posts.AddRange(posts);
-    //    await context.SaveChangesAsync();
-
-    //    // Act
-    //    var response = await _client.GetAsync($"/posts/{posts.First().Slug}");
-    //    var responseString = await response.Content.ReadAsStringAsync();
-
-    //    // Assert
-    //    Assert.Contains(posts.First().Title, responseString);
-    //}
-
     [Fact]
     public async Task GetPost_WithInvalidSlug_ShouldReturnNotFound()
     {
@@ -58,151 +40,199 @@ public class BlogIntegrationTests : IClassFixture<SqlServerContainerFixture>, IA
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
-    //[Fact]
-    //public async Task Index_WithSeededData_ShouldReturnAllPosts()
-    //{
-    //    // Arrange
-    //    var posts = TestHelper.CreatePosts(5);
-    //    using var scope = _app.Services.CreateScope();
-    //    var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
-    //    context.Posts.AddRange(posts);
-    //    await context.SaveChangesAsync();
+    [Fact]
+    public async Task Index_WithSeededData_ShouldReturnAllPosts()
+    {
+        // Arrange
+        var posts = TestHelper.CreatePosts(5);
+        using var scope = _app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
+        context.Posts.AddRange(posts);
+        await context.SaveChangesAsync();
 
-    //    // Act
-    //    var response = await _client.GetAsync("/");
-    //    var resultString = await response.Content.ReadAsStringAsync();
+        // Act
+        var response = await _client.GetAsync("/");
+        var resultString = await response.Content.ReadAsStringAsync();
 
-    //    // Assert
-    //    foreach (var post in posts)
-    //    {
-    //        Assert.Contains(post.Title, resultString);
-    //    }
-    //}
+        // Assert
+        foreach (var post in posts)
+        {
+            Assert.Contains(post.Title, resultString);
+        }
+    }
 
     [Fact]
     public async Task CreatePost_WithInvalidAdminKey_ShouldReturnUnauthorized()
     {
         // Arrange
-        var posts = TestHelper.CreatePosts(1);
-        var postDTO = posts.First().MapToObject();
-        _client.DefaultRequestHeaders.Add("admin_key", "invalid-admin-key");
+        var post = TestHelper.CreatePosts(1).First();
+        var createPostVM = new CreatePostViewModel()
+        {
+            Title = post.Title,
+            Body = post.Body,
+            AdminKey = "invalid-admin-key"
+        };
+        var formData = TestHelper.MapToFormEncodedData(createPostVM);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/posts/create", postDTO);
+        var response = await _client.PostAsync("/posts/create", formData);
+        var resultString = await response.Content.ReadAsStringAsync();
 
         // Assert
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.Contains("Invalid admin key.", resultString);
     }
 
-    //[Fact]
-    //public async Task CreatePost_WithValidAdminKey_ShouldReturnViewWithItem()
-    //{
-    //    // Arrange
-    //    var posts = TestHelper.CreatePosts(1);
-    //    var postDTO = posts.First().MapToObject();
-    //    _client.DefaultRequestHeaders.Add("admin_key", "test-admin-key");
+    [Fact]
+    public async Task CreatePost_WithValidAdminKey_ShouldReturnViewWithItem()
+    {
+        // Arrange
+        var post = TestHelper.CreatePosts(1).First();
+        var createPostVM = new CreatePostViewModel()
+        {
+            Title = post.Title,
+            Body = post.Body,
+            AdminKey = "test-admin-key"
+        };
+        var formData = TestHelper.MapToFormEncodedData(createPostVM);
 
-    //    // Act
-    //    var response = await _client.PostAsJsonAsync("/posts/create", postDTO);
-    //    var resultString = await response.Content.ReadAsStringAsync();
+        // Act
+        var response = await _client.PostAsync("/posts/create", formData);
+        var resultString = await response.Content.ReadAsStringAsync();
 
-    //    // Assert
-    //    Assert.Contains(postDTO.Title, resultString);
-    //}
+        // Assert
+        Assert.Contains(post.Title, resultString);
+    }
 
-    //[Fact]
-    //public async Task CreatePost_WithDuplicateSlug_ShouldReturnBadRequest()
-    //{
-    //    // Arrange
-    //    var posts = TestHelper.CreatePosts(1);
-    //    using var scope = _app.Services.CreateScope();
-    //    var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
-    //    context.Posts.AddRange(posts);
-    //    await context.SaveChangesAsync();
-    //    var postDTO = posts.First().MapToObject();
-    //    _client.DefaultRequestHeaders.Add("admin_key", "test-admin-key");
+    [Fact]
+    public async Task CreatePost_WithDuplicateSlug_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var post = TestHelper.CreatePosts(1).First();
+        using var scope = _app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
+        context.Posts.Add(post);
+        await context.SaveChangesAsync();
 
-    //    // Act
-    //    var response = await _client.PostAsJsonAsync("/posts/create", postDTO);
+        var createPostVM = new CreatePostViewModel()
+        {
+            Title = post.Title,
+            Body = post.Body,
+            AdminKey = "test-admin-key"
+        };
+        var formData = TestHelper.MapToFormEncodedData(createPostVM);
 
-    //    // Assert
-    //    Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    //}
+        // Act
+        var response = await _client.PostAsync("/posts/create", formData);
+        var resultString = await response.Content.ReadAsStringAsync();
 
-    //[Fact]
-    //public async Task DeletePost_WithValidAdminKeyAndSlug_ShouldReturnViewWithoutDeletedItem()
-    //{
-    //    // Arrange
-    //    var posts = TestHelper.CreatePosts(5);
-    //    using var scope = _app.Services.CreateScope();
-    //    var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
-    //    context.Posts.AddRange(posts);
-    //    await context.SaveChangesAsync();
-    //    _client.DefaultRequestHeaders.Add("admin_key", "test-admin-key");
+        // Assert
+        Assert.Contains(post.Title, resultString);
+    }
 
-    //    // Act
-    //    var response = await _client.GetAsync($"/posts/{posts[^1].Slug}/");
-    //    var resultString = await response.Content.ReadAsStringAsync();
+    [Fact]
+    public async Task DeletePost_WithValidAdminKeyAndSlug_ShouldReturnViewWithoutDeletedItem()
+    {
+        // Arrange
+        var posts = TestHelper.CreatePosts(5);
+        using var scope = _app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
+        context.Posts.AddRange(posts);
+        await context.SaveChangesAsync();
 
-    //    // Assert
-    //    Assert.DoesNotContain(posts[^1].Title, resultString);
-    //}
+        var postToDelete = posts.First();
+        var deletePostVM = new DeletePostViewModel()
+        {
+            Title = postToDelete.Title,
+            Slug = postToDelete.Slug,
+            AdminKey = "test-admin-key"
+        };
+        var formData = TestHelper.MapToFormEncodedData(deletePostVM);
+
+        // Act
+        var response = await _client.PostAsync($"/posts/{postToDelete.Slug}/delete", formData);
+        var resultString = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        Assert.DoesNotContain(postToDelete.Title, resultString);
+    }
 
     [Fact]
     public async Task DeletePost_WithInvalidAdminKey_ShouldReturnUnauthorized()
     {
         // Arrange
-        var posts = TestHelper.CreatePosts(1);
+        var post = TestHelper.CreatePosts(1).First();
         using var scope = _app.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
-        context.Posts.AddRange(posts);
+        context.Posts.Add(post);
         await context.SaveChangesAsync();
-        _client.DefaultRequestHeaders.Add("admin_key", "invalid-admin-key");
+
+        var deletePostVM = new DeletePostViewModel()
+        {
+            Title = post.Title,
+            Slug = post.Slug,
+            AdminKey = "invalid-admin-key"
+        };
+        var formData = TestHelper.MapToFormEncodedData(deletePostVM);
 
         // Act
-        var response = await _client.PostAsync($"/posts/{posts.First().Slug}/delete", null);
+        var response = await _client.PostAsync($"/posts/{post.Slug}/delete", formData);
+        var resultString = await response.Content.ReadAsStringAsync();
 
         // Assert
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.Contains("Invalid admin key.", resultString);
     }
 
     [Fact]
-    public async Task DeletePost_WithInvalidSlug_ShouldReturnBadRequest()
+    public async Task DeletePost_WithInvalidSlug_ShouldReturnSamePageWithModelValidationErrors()
     {
         // Arrange
-        var posts = TestHelper.CreatePosts(1);
+        var post = TestHelper.CreatePosts(1).First();
         using var scope = _app.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
-        context.Posts.AddRange(posts);
+        context.Posts.Add(post);
         await context.SaveChangesAsync();
-        _client.DefaultRequestHeaders.Add("admin_key", "test-admin-key");
+
+        var deletePostVM = new DeletePostViewModel()
+        {
+            Title = post.Title,
+            Slug = "invalid-slug",
+            AdminKey = "test-admin-key"
+        };
+        var formData = TestHelper.MapToFormEncodedData(deletePostVM);
 
         // Act
-        var response = await _client.PostAsync("/posts/invalid-slug/delete", null);
+        var response = await _client.PostAsync("/posts/invalid-slug/delete", formData);
+        var resultString = await response.Content.ReadAsStringAsync();
 
         // Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains("An error occurred:", resultString);
     }
 
-    //[Fact]
-    //public async Task CreateComment_ShouldReturnViewWithComment()
-    //{
-    //    // Arrange
-    //    var posts = TestHelper.CreatePosts(1);
-    //    using var scope = _app.Services.CreateScope();
-    //    var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
-    //    context.Posts.AddRange(posts);
-    //    await context.SaveChangesAsync();
+    [Fact]
+    public async Task CreateComment_ShouldReturnViewWithComment()
+    {
+        // Arrange
+        var post = TestHelper.CreatePosts(1).First();
+        using var scope = _app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
+        context.Posts.Add(post);
+        await context.SaveChangesAsync();
 
-    //    _client.DefaultRequestHeaders.Add("admin_key", "test-admin-key");
-    //    var comments = TestHelper.CreateComments(1, posts.First().PostId);
-    //    var commentDTO = comments.First().MapToObject();
+        var comment = TestHelper.CreateComments(1, post.PostId).First();
+        var createCommentVM = new CreateCommentViewModel()
+        {
+            CommentName = comment.Name,
+            CommentText = comment.Text,
+            Slug = post.Slug
+        };
+        var formData = TestHelper.MapToFormEncodedData(createCommentVM);
 
-    //    // Act
-    //    var response = await _client.PostAsJsonAsync($"/posts/{posts.First().Slug}/create-comment", commentDTO);
-    //    var resultString = await response.Content.ReadAsStringAsync();
+        // Act
+        var response = await _client.PostAsync($"/posts/{post.Slug}/comment", formData);
+        var resultString = await response.Content.ReadAsStringAsync();
+        var postedComment = context.Comments.First(c => c.PostId == post.PostId);
 
-    //    // Assert
-    //    Assert.Contains(comments.First().Token, resultString);
-    //}
+        // Assert
+        Assert.Contains(postedComment.Token, resultString);
+    }
 }

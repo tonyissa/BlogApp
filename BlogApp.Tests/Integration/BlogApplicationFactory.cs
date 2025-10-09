@@ -32,7 +32,6 @@ public class BlogApplicationFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll(typeof(DbContextOptions<BlogContext>));
             services.AddSqlServer<BlogContext>(_connString);
-
             services.AddSingleton<IAntiforgery, MockedAntiforgery>();
         });
 
@@ -40,7 +39,7 @@ public class BlogApplicationFactory : WebApplicationFactory<Program>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Admin:Key"] = Environment.GetEnvironmentVariable("admin_key"),
+                ["Admin:Key"] = "test-admin-key",
                 ["ConnectionStrings:BlogConnection"] = ""
             });
         });

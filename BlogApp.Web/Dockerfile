@@ -3,8 +3,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 WORKDIR /src
 
-COPY ["BlogApp.Web/BlogApp.Web.csproj", "BlogApp.Web/"]
-RUN dotnet restore "BlogApp.Web/BlogApp.Web.csproj"
+COPY ["BlogApp.Web.csproj", "BlogApp.Web/"]
+RUN dotnet restore "BlogApp.Web.csproj"
 COPY . .
 
 WORKDIR /src/BlogApp.Web

@@ -20,4 +20,4 @@ jobs:
         run: dotnet test --no-build -c Release --filter Category=Unit
 
       - name: Run integration tests
-        run: dotnet test --no-build -c Release --filter Category=Integration --environment admin_key="test-admin-key"
+        run: dotnet test --no-build -c Release --filter Category=Integration

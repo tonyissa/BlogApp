@@ -60,7 +60,6 @@ else
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseExceptionHandler("/Error");
 
 app.MapControllerRoute(
     name: "default",

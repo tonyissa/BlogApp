@@ -1,0 +1,26 @@
+name: CD - Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Publish project
+        run: dotnet publish -c Release 
+
+      - name: Build container
+        env:
+          SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
+          ADMIN_KEY: ${{ secrets.ADMIN_KEY }}
+        run: docker compose build 
+
+      - name: Run containers detached
+        env:
+          SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
+          ADMIN_KEY: ${{ secrets.ADMIN_KEY }}
+        run: docker compose up -d && docker image prune -f

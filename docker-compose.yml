@@ -1,0 +1,25 @@
+services:
+  web:
+    build:
+      context: ./BlogApp.Web
+      dockerfile: Dockerfile
+    ports:
+      - "80:8080"
+      - "443:8443"
+    environment:
+      ASPNETCORE_URLS: "http://+:8080;https://+:8443"
+      ConnectionStrings__BlogConnection: Server=db;Database=BlogDb;User ID=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False;
+      Admin__Key: ${ADMIN_KEY}
+    depends_on:
+      - db
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      MSSQL_SA_PASSWORD: "${SA_PASSWORD}"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+volumes:
+  mssql_data:

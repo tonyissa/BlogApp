@@ -35,7 +35,6 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseHsts();
     app.UseDeveloperExceptionPage();
 
     using var scope = app.Services.CreateScope();
@@ -55,7 +54,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error");
-    app.UseHttpsRedirection();
 }
 
 app.UseStaticFiles();

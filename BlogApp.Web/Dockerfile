@@ -6,11 +6,10 @@ WORKDIR /src
 COPY "BlogApp.Web.csproj" ./
 RUN dotnet restore "BlogApp.Web.csproj"
 COPY . .
-
-RUN dotnet publish -c Release --no-restore -o /app/publish
+RUN dotnet publish -c Release -o /app/publish "BlogApp.Web.csproj"
 
 # Run stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 as final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 
 WORKDIR /app
 

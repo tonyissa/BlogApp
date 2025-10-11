@@ -6,7 +6,6 @@ WORKDIR /src
 COPY "BlogApp.Web.csproj" ./
 RUN dotnet restore "BlogApp.Web.csproj"
 COPY . .
-
 RUN dotnet publish -c Release -o /app/publish "BlogApp.Web.csproj"
 
 # Run stage

@@ -10,16 +10,13 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Publish project
-        run: dotnet publish -c Release 
-
       - name: Build container
         env:
           SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
           ADMIN_KEY: ${{ secrets.ADMIN_KEY }}
         run: docker compose build 
 
-      - name: Run containers detached
+      - name: Run containers detached & cleanup old images
         env:
           SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
           ADMIN_KEY: ${{ secrets.ADMIN_KEY }}

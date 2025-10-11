@@ -3,13 +3,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 WORKDIR /src
 
-COPY ["BlogApp.Web/BlogApp.Web.csproj", "BlogApp.Web/"]
-RUN dotnet restore "BlogApp.Web/BlogApp.Web.csproj"
+COPY "BlogApp.Web.csproj" ./
+RUN dotnet restore "BlogApp.Web.csproj"
 COPY . .
 
-WORKDIR /src/BlogApp.Web
-
-RUN dotnet publish -c Release -o --no-restore /app/publish
+RUN dotnet publish -c Release --no-restore -o /app/publish
 
 # Run stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 as final

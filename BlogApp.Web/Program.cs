@@ -43,7 +43,7 @@ if (app.Environment.IsDevelopment())
     var dbContext = scope.ServiceProvider.GetRequiredService<BlogContext>();
     try
     {
-        logger.LogDebug("Applying pending migrations");
+        logger.LogDebug("Applying pending migrations.");
         dbContext.Database.Migrate();
     }
     catch (Exception ex)
@@ -60,7 +60,6 @@ else
 
 app.UseStaticFiles();
 app.UseRouting();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Blog}/{action=Index}/{id?}");

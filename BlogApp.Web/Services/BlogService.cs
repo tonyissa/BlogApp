@@ -78,8 +78,8 @@ public class BlogService(BlogContext context, IOptions<AdminOptions> adminOption
     public async Task<CommentDTO?> GetCommentAsync(string token) => 
         await _context.Comments
             .Where(p => p.Token == token)
-            .Select(c => c.MapToObject())
             .OrderByDescending(p => p.DatePosted)
+            .Select(c => c.MapToObject())
             .FirstOrDefaultAsync();
 
     public async Task AddCommentAsync(CommentDTO commentDTO, string slug)

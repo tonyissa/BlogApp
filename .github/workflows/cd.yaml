@@ -13,8 +13,8 @@ jobs:
     steps:
       - name: Create .env file
         run: |
-          echo "SA_PASSWORD=${{ secrets.SA_PASSWORD }}" > .env
-          echo "ADMIN_KEY=${{ secrets.ADMIN_KEY }}" >> .env
+          echo 'SA_PASSWORD=${{ secrets.SA_PASSWORD }}' > .env
+          echo 'ADMIN_KEY=${{ secrets.ADMIN_KEY }}' >> .env
 
       - name: Build container
         run: docker compose build 

@@ -35,25 +35,25 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-
-    using var scope = app.Services.CreateScope();
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    var dbContext = scope.ServiceProvider.GetRequiredService<BlogContext>();
-    try
-    {
-        logger.LogDebug("Applying pending migrations.");
-        dbContext.Database.Migrate();
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "An error occurred while migrating or initializing the database.");
-        return;
-    }
 }
-//else
-//{
-//    app.UseExceptionHandler("/Error");
-//}
+else
+{
+    //app.UseExceptionHandler("/Error");
+}
+
+using var scope = app.Services.CreateScope();
+var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+var dbContext = scope.ServiceProvider.GetRequiredService<BlogContext>();
+try
+{
+    logger.LogDebug("Applying pending migrations.");
+    dbContext.Database.Migrate();
+}
+catch (Exception ex)
+{
+    logger.LogError(ex, "An error occurred while migrating or initializing the database.");
+    return;
+}
 
 app.UseStaticFiles();
 app.UseRouting();

@@ -23,9 +23,8 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost", 
-                           "close-genuinely-seahorse.ngrok-free.app",
-                           "http://192.168.0.7")
+        policy.WithOrigins("http://localhost",
+                           "http://tonysblog.duckdns.org")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });

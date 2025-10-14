@@ -11,14 +11,13 @@ jobs:
     environment: production
 
     steps:
+      - name: Create .env file
+        run: |
+          echo "SA_PASSWORD=${{ secrets.SA_PASSWORD }}" > .env
+          echo "ADMIN_KEY=${{ secrets.ADMIN_KEY }}" >> .env
+
       - name: Build container
-        env:
-          SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
-          ADMIN_KEY: ${{ secrets.ADMIN_KEY }}
         run: docker compose build 
 
       - name: Run containers detached & cleanup old images
-        env:
-          SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
-          ADMIN_KEY: ${{ secrets.ADMIN_KEY }}
         run: docker compose up -d && docker image prune -f

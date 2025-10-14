@@ -6,7 +6,7 @@ services:
     ports:
       - "127.0.0.1:8080:80"
     environment:
-      ASPNETCORE_URLS: "http://+:8080"
+      ASPNETCORE_URLS: "http://+:80"
       ConnectionStrings__BlogConnection: Server=db;Database=BlogDb;User ID=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False;
       Admin__Key: ${ADMIN_KEY}
     depends_on:

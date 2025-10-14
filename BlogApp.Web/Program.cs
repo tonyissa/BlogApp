@@ -50,10 +50,10 @@ if (app.Environment.IsDevelopment())
         return;
     }
 }
-else
-{
-    app.UseExceptionHandler("/Error");
-}
+//else
+//{
+//    app.UseExceptionHandler("/Error");
+//}
 
 app.UseStaticFiles();
 app.UseRouting();

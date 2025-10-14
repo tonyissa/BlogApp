@@ -11,6 +11,9 @@ jobs:
     environment: production
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Create .env file
         run: |
           echo 'SA_PASSWORD=${{ secrets.SA_PASSWORD }}' > .env

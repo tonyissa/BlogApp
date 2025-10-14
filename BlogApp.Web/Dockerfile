@@ -15,6 +15,6 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
-EXPOSE 80/tcp
+EXPOSE 8080/tcp
 
 ENTRYPOINT [ "dotnet", "BlogApp.Web.dll" ]

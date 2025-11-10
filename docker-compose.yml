@@ -3,6 +3,7 @@ services:
     build:
       context: ./BlogApp.Web
       dockerfile: Dockerfile
+    restart: unless-stopped
     ports:
       - "8080:80"
     environment:
